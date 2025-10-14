@@ -40,7 +40,6 @@ class _LoginState extends State<Login> {
         context,
       ).showSnackBar(const SnackBar(content: Text("Inicio de sesión exitoso")));
 
-      // Aquí puedes redirigir a tu pantalla principal
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => ResponsiveNavBarPage()),
@@ -81,7 +80,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 30),
 
-                // Campo de correo
                 TextField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -95,7 +93,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 20),
 
-                // Campo de contraseña
                 TextField(
                   controller: passwordController,
                   obscureText: _obscurePassword,
@@ -121,7 +118,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 25),
 
-                // Botón de inicio
                 SizedBox(
                   width: double.infinity,
                   child: isLoading
@@ -143,7 +139,6 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 15),
 
-                // Botón para ir a registro
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(

@@ -29,10 +29,7 @@ class ResponsiveNavBarPage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/images/logo_splash.jpg',
-                  height: 40, // ajusta el tamaño según el diseño
-                ),
+                Image.asset('assets/images/logo_splash.jpg', height: 40),
                 if (isLargeScreen) Expanded(child: _navBarItems()),
               ],
             ),
