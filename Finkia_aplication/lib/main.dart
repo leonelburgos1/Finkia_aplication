@@ -27,7 +27,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Inicio AGROU')),
-      body: const Center(child: Text('Bienvenido a AGROU 🌱')),
+      body: const Center(child: Text('Bienvenido a Finkia 🌱')),
     );
   }
 }
