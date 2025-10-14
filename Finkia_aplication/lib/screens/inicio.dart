@@ -14,8 +14,9 @@ class ResponsiveNavBarPage extends StatelessWidget {
       data: ThemeData.dark(),
       child: Scaffold(
         key: _scaffoldKey,
+        backgroundColor: const Color.fromARGB(255, 118, 235, 15), // 💚 Color de fondo
         appBar: AppBar(
-          backgroundColor: const Color.fromRGBO(43, 122, 11, 1),
+          backgroundColor: const Color.fromARGB(255, 163, 228, 138),
           elevation: 0,
           titleSpacing: 0,
           leading: isLargeScreen
@@ -30,8 +31,8 @@ class ResponsiveNavBarPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/logo_splash.jpg',
-                  height: 40, // ajusta el tamaño según el diseño
+                  'assets/images/Finkia_Transparente.png',
+                  height: 40,
                 ),
                 if (isLargeScreen) Expanded(child: _navBarItems()),
               ],
@@ -45,51 +46,64 @@ class ResponsiveNavBarPage extends StatelessWidget {
           ],
         ),
         drawer: isLargeScreen ? null : _drawer(),
-        body: const Center(child: Text("Body")),
+
+        // 💡 Aquí cambiamos el "Body" por una imagen de fondo
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            color: Color(0xFFEAF4E1), // color base si la imagen no carga
+            image: DecorationImage(
+              image: AssetImage('assets/images/logo_splash.jpg'),
+              fit: BoxFit.contain, // mantiene proporción sin deformar
+              alignment: Alignment.center,
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _drawer() => Drawer(
-    child: ListView(
-      children: _menuItems
-          .map(
-            (item) => ListTile(
-              onTap: () {
-                _scaffoldKey.currentState?.openEndDrawer();
-              },
-              title: Text(item),
-            ),
-          )
-          .toList(),
-    ),
-  );
+        child: ListView(
+          children: _menuItems
+              .map(
+                (item) => ListTile(
+                  onTap: () {
+                    _scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  title: Text(item),
+                ),
+              )
+              .toList(),
+        ),
+      );
 
   Widget _navBarItems() => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: _menuItems
-        .map(
-          (item) => InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 24.0,
-                horizontal: 16,
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: _menuItems
+            .map(
+              (item) => InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 24.0,
+                    horizontal: 16,
+                  ),
+                  child: Text(item, style: const TextStyle(fontSize: 18)),
+                ),
               ),
-              child: Text(item, style: const TextStyle(fontSize: 18)),
-            ),
-          ),
-        )
-        .toList(),
-  );
+            )
+            .toList(),
+      );
 }
 
 final List<String> _menuItems = <String>[
-  'About',
-  'Contact',
-  'Settings',
-  'Sign Out',
+  'Acerca de',
+  'Contacto',
+  'Configuración',
+  'Salir',
 ];
 
 enum Menu { itemOne, itemTwo, itemThree }
@@ -104,11 +118,11 @@ class _ProfileIcon extends StatelessWidget {
       offset: const Offset(0, 40),
       onSelected: (Menu item) {},
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-        const PopupMenuItem<Menu>(value: Menu.itemOne, child: Text('Account')),
-        const PopupMenuItem<Menu>(value: Menu.itemTwo, child: Text('Settings')),
+        const PopupMenuItem<Menu>(value: Menu.itemOne, child: Text('Cuenta')),
+        const PopupMenuItem<Menu>(value: Menu.itemTwo, child: Text('Configuración')),
         const PopupMenuItem<Menu>(
           value: Menu.itemThree,
-          child: Text('Sign Out'),
+          child: Text('Salir'),
         ),
       ],
     );
