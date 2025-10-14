@@ -1,3 +1,3 @@
-# agrou_aplication
+# Finkia_aplication
 
 A new Flutter project.
