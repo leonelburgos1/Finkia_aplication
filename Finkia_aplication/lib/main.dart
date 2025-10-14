@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -12,14 +16,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'AGROU',
+      title: 'Finkia',
       theme: ThemeData(primarySwatch: Colors.green),
-      home: const SplashScreen(), // <- aquí pones tu splash primero
+      home: const SplashScreen(),
     );
   }
 }
 
-// Ejemplo de tu pantalla principal
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "163385379419",
+    "project_id": "finkia",
+    "storage_bucket": "finkia.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163385379419:android:d24e643354f4b6b7d6cd7e",
+        "android_client_info": {
+          "package_name": "com.example.agrou_aplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcCmYmUGvIu5mgC5lvRaX9_JXzu-x2WMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
