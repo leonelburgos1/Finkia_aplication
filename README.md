@@ -1,2 +1,2 @@
-# agroU_aplication
+# Finkia_aplication
 proyecto desarrollo móvil
