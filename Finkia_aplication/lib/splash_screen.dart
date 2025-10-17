@@ -28,9 +28,9 @@ class _SplashScreenState extends State<SplashScreen> {
     _controller.addListener(() {
       if (_controller.value.position == _controller.value.duration) {
         // ⏩ Cuando termine, pasa a la pantalla de login
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const Login()),
-        );
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const Login()));
       }
     });
   }
@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 aspectRatio: _controller.value.aspectRatio,
                 child: VideoPlayer(_controller),
               )
-            : const CircularProgressIndicator(), // Círculo mientras carga
+            : const CircularProgressIndicator(),
       ),
     );
   }
