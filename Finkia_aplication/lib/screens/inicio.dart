@@ -14,7 +14,7 @@ class ResponsiveNavBarPage extends StatelessWidget {
       data: ThemeData.dark(),
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: const Color.fromARGB(255, 118, 235, 15), // 💚 Color de fondo
+        backgroundColor: const Color.fromARGB(255, 118, 235, 15), // 
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 163, 228, 138),
           elevation: 0,
