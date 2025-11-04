@@ -9,7 +9,7 @@ Future<void> main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 👇 Oculta barra de estado y botones de navegación (modo inmersivo total)
+  // Oculta barra de estado y botones
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   runApp(const MyApp());
@@ -20,19 +20,44 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 👇 Asegura que el modo inmersivo se mantenga activo cada vez que se reconstruya la app
     return WidgetsBindingObserverApp(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Finkia',
-        theme: ThemeData(primarySwatch: Colors.green),
+
+        // 🌞 Tema claro
+        theme: ThemeData(
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            elevation: 0,
+          ),
+          iconTheme: const IconThemeData(color: Colors.black87),
+        ),
+
+        // 🌚 Tema oscuro
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: const Color(0xFF121212),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFF1E1E1E),
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          iconTheme: const IconThemeData(color: Colors.white70),
+        ),
+
+        // Cambia según el sistema
+        themeMode: ThemeMode.system,
+
         home: const SplashScreen(),
       ),
     );
   }
 }
 
-/// 👇 Clase personalizada que mantiene el modo inmersivo activo siempre
 class WidgetsBindingObserverApp extends StatefulWidget {
   final Widget child;
   const WidgetsBindingObserverApp({super.key, required this.child});
@@ -52,7 +77,6 @@ class _WidgetsBindingObserverAppState extends State<WidgetsBindingObserverApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // 👇 Cada vez que la app vuelve a primer plano, reactiva el modo inmersivo
     if (state == AppLifecycleState.resumed) {
       _enableImmersiveMode();
     }
