@@ -1,8 +1,10 @@
+import 'package:agrou_aplication/l10n/app_localizations.dart';
 import 'package:agrou_aplication/screens/form_finca.dart';
 import 'package:agrou_aplication/screens/fincas.dart';
 import 'package:agrou_aplication/screens/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:agrou_aplication/utils/localization_extension.dart';
 
 // ------------------ PÁGINA PRINCIPAL ------------------
 class ResponsiveNavBarPage extends StatefulWidget {
@@ -18,11 +20,16 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   int selectedIndex = 0;
 
   // Páginas a mostrar según el botón del BottomNavBar
-  final List<Widget> _pages = const [
+  List<Widget> get _pages => [
     HomeSection(),
     FincasPage(),
     FormFinca(),
-    Center(child: Text("🔔 Notificaciones", style: TextStyle(fontSize: 24))),
+    Center(
+      child: Text(
+        AppLocalizations.of(context)!.notificaciones,
+        style: const TextStyle(fontSize: 24),
+      ),
+    ),
   ];
 
   @override
@@ -34,8 +41,8 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-      foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
 
         elevation: 0,
         titleSpacing: 0,
@@ -94,39 +101,39 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
 
   // ------------------ MENÚ LATERAL ------------------
   Widget _drawer() => Drawer(
-        child: ListView(
-          children: _menuItems
-              .map(
-                (item) => ListTile(
-                  onTap: () {
-                    _scaffoldKey.currentState?.openEndDrawer();
-                  },
-                  title: Text(item),
-                ),
-              )
-              .toList(),
-        ),
-      );
+    child: ListView(
+      children: _menuItems
+          .map(
+            (item) => ListTile(
+              onTap: () {
+                _scaffoldKey.currentState?.openEndDrawer();
+              },
+              title: Text(item),
+            ),
+          )
+          .toList(),
+    ),
+  );
 
   // ------------------ NAVBAR SUPERIOR ------------------
   Widget _navBarItems() => Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _menuItems
-            .map(
-              (item) => InkWell(
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 24.0,
-                    horizontal: 16,
-                  ),
-                  child: Text(item, style: const TextStyle(fontSize: 18)),
-                ),
+    mainAxisAlignment: MainAxisAlignment.end,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: _menuItems
+        .map(
+          (item) => InkWell(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 24.0,
+                horizontal: 16,
               ),
-            )
-            .toList(),
-      );
+              child: Text(item, style: const TextStyle(fontSize: 18)),
+            ),
+          ),
+        )
+        .toList(),
+  );
 }
 
 final List<String> _menuItems = <String>[
@@ -164,12 +171,18 @@ class _ProfileIcon extends StatelessWidget {
         }
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-        const PopupMenuItem<Menu>(value: Menu.itemOne, child: Text('Cuenta')),
-        const PopupMenuItem<Menu>(
-          value: Menu.itemTwo,
-          child: Text('Configuración'),
+        PopupMenuItem<Menu>(
+          value: Menu.itemOne,
+          child: Text(context.local.cuenta),
         ),
-        const PopupMenuItem<Menu>(value: Menu.itemThree, child: Text('Salir')),
+        PopupMenuItem<Menu>(
+          value: Menu.itemTwo,
+          child: Text(context.local.configuracion),
+        ),
+        PopupMenuItem<Menu>(
+          value: Menu.itemThree,
+          child: Text(context.local.salir),
+        ),
       ],
     );
   }
@@ -200,14 +213,20 @@ class HomeSection extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.add),
-                label: const Text('Agregar Finca',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                label: Text(
+                  context.local.agregarFinca,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2B7A0B),
                   foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -222,14 +241,17 @@ class HomeSection extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.list_alt),
-                label: const Text('Mis Fincas',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                label: Text(
+                  context.local.misFincas,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF81B622),
                   foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 25,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

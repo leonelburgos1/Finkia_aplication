@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:agrou_aplication/utils/localization_extension.dart';
 
 class FincasData {
   // 🌱 Lista estática que guarda temporalmente las fincas registradas
@@ -21,8 +22,8 @@ class _FincasPageState extends State<FincasPage> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         backgroundColor: AppColors.appBarColor,
-        title: const Text(
-          "Mis Fincas",
+        title: Text(
+          context.local.misFincas,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -47,8 +48,8 @@ class _FincasPageState extends State<FincasPage> {
             color: AppColors.primaryColor.withOpacity(0.6),
           ),
           const SizedBox(height: 20),
-          const Text(
-            "No tienes fincas registradas aún.",
+          Text(
+            context.local.sinRegistro,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w500,
@@ -56,8 +57,8 @@ class _FincasPageState extends State<FincasPage> {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            "Agrega tu primera finca desde el inicio 🌱",
+          Text(
+            context.local.primeraFinca,
             style: TextStyle(fontSize: 16, color: Colors.black45),
           ),
         ],
@@ -81,7 +82,7 @@ class _FincasPageState extends State<FincasPage> {
           child: ListTile(
             contentPadding: const EdgeInsets.all(16),
             title: Text(
-              finca['nombre'] ?? 'Sin nombre',
+              finca[context.local.nombre] ?? context.local.sinNombre,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -89,8 +90,8 @@ class _FincasPageState extends State<FincasPage> {
               ),
             ),
             subtitle: Text(
-              "Ubicación: ${finca['ubicacion'] ?? 'Desconocida'}\n"
-              "Área: ${finca['area'] ?? 'N/A'} ha",
+              "${context.local.ubicacion}: ${finca[context.local.ubicacion] ?? context.local.desconocida}\n"
+              "${context.local.area}: ${finca[context.local.area] ?? 'N/A'} ha",
               style: const TextStyle(fontSize: 15, color: Colors.black54),
             ),
             trailing: Icon(
@@ -114,7 +115,7 @@ class _FincasPageState extends State<FincasPage> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          finca['nombre'] ?? 'Sin nombre',
+          finca[context.local.nombre] ?? context.local.sinNombre,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.green,
@@ -124,15 +125,24 @@ class _FincasPageState extends State<FincasPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Área: ${finca['area']} ha"),
-            Text("Actividad: ${finca['actividad']}"),
-            Text("Ubicación: ${finca['ubicacion']}"),
-            Text("Administrador: ${finca['contacto'] ?? 'No especificado'}"),
+            Text("${context.local.area}: ${finca[context.local.area]} ha"),
+            Text(
+              "${context.local.actividad}: ${finca[context.local.actividad]}",
+            ),
+            Text(
+              "${context.local.ubicacion}: ${finca[context.local.ubicacion]}",
+            ),
+            Text(
+              "${context.local.administrador}: ${finca[context.local.contacto] ?? context.local.noEspecificado}",
+            ),
           ],
         ),
         actions: [
           TextButton(
-            child: const Text("Cerrar", style: TextStyle(color: Colors.green)),
+            child: Text(
+              context.local.cerrado,
+              style: TextStyle(color: Colors.green),
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ],

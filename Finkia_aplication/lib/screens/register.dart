@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login.dart';
+import 'package:agrou_aplication/utils/localization_extension.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -27,15 +28,15 @@ class _RegisterState extends State<Register> {
 
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Las contraseñas no coinciden")),
+        SnackBar(content: Text(context.local.contrasenasNoCoinciden)),
       );
       return;
     }
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Por favor completa todos los campos")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.local.camposObligatorios)));
       return;
     }
 
@@ -49,7 +50,7 @@ class _RegisterState extends State<Register> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Registro exitoso")));
+      ).showSnackBar(SnackBar(content: Text(context.local.registroExitoso)));
 
       Navigator.pushReplacement(
         context,
@@ -80,18 +81,22 @@ class _RegisterState extends State<Register> {
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(5),
+              ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
                 child: Container(
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 30,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Crear Cuenta',
+                      Text(
+                        context.local.crearCuenta,
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -109,9 +114,9 @@ class _RegisterState extends State<Register> {
                         child: TextField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            hintText: 'Correo electrónico',
-                            prefixIcon: Icon(Icons.email),
+                          decoration: InputDecoration(
+                            hintText: context.local.correoElectronico,
+                            prefixIcon: const Icon(Icons.email),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.all(15),
                           ),
@@ -129,7 +134,7 @@ class _RegisterState extends State<Register> {
                           controller: passwordController,
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
-                            hintText: 'Contraseña',
+                            hintText: context.local.contrasena,
                             prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -160,7 +165,7 @@ class _RegisterState extends State<Register> {
                           controller: confirmPasswordController,
                           obscureText: _obscureConfirmPassword,
                           decoration: InputDecoration(
-                            hintText: 'Confirmar contraseña',
+                            hintText: context.local.confirmarContrasena,
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -190,18 +195,25 @@ class _RegisterState extends State<Register> {
                             : ElevatedButton(
                                 onPressed: register,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color.fromARGB(162, 125, 131, 59),
+                                  backgroundColor: const Color.fromARGB(
+                                    162,
+                                    125,
+                                    131,
+                                    59,
+                                  ),
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 15),
+                                    vertical: 15,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                 ),
-                                child: const Text(
-                                  'Registrarse',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                child: Text(
+                                  context.local.registrarse,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                       ),
@@ -215,8 +227,8 @@ class _RegisterState extends State<Register> {
                             MaterialPageRoute(builder: (_) => const Login()),
                           );
                         },
-                        child: const Text(
-                          '¿Ya tienes cuenta? Inicia sesión',
+                        child: Text(
+                          context.local.yaTienesCuenta,
                           style: TextStyle(color: Colors.white),
                         ),
                       ),

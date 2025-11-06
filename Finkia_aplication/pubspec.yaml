@@ -13,6 +13,9 @@ dependencies:
   firebase_auth: ^6.1.1
   video_player: ^2.9.1
   country_state_city_picker: ^1.2.8
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -21,7 +24,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/images/
     - assets/videos/
+    - lib/l10n/
+    
+  generate: true
 

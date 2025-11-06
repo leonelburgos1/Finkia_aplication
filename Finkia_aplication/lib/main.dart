@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:agrou_aplication/l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +25,30 @@ class MyApp extends StatelessWidget {
     return WidgetsBindingObserverApp(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        localizationsDelegates: const [
+          AppLocalizations.delegate, // Traducciones generadas
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+
+        // 👇 Lista de idiomas soportados
+        supportedLocales: const [
+          Locale('en'), // Inglés
+          Locale('es'), // Español
+          Locale('es', 'CO'), // Español (Colombia)
+        ],
+
+        // 👇 Detecta automáticamente el idioma del sistema
+        localeResolutionCallback: (locale, supportedLocales) {
+          for (var supportedLocale in supportedLocales) {
+            if (supportedLocale.languageCode == locale?.languageCode) {
+              return supportedLocale;
+            }
+          }
+          return supportedLocales.first;
+        },
+
         title: 'Finkia',
 
         // 🌞 Tema claro
@@ -63,7 +89,8 @@ class WidgetsBindingObserverApp extends StatefulWidget {
   const WidgetsBindingObserverApp({super.key, required this.child});
 
   @override
-  State<WidgetsBindingObserverApp> createState() => _WidgetsBindingObserverAppState();
+  State<WidgetsBindingObserverApp> createState() =>
+      _WidgetsBindingObserverAppState();
 }
 
 class _WidgetsBindingObserverAppState extends State<WidgetsBindingObserverApp>

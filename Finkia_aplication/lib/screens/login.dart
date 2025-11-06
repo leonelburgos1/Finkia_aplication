@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'register.dart';
 import 'inicio.dart';
+import 'package:agrou_aplication/utils/localization_extension.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -23,9 +24,9 @@ class _LoginState extends State<Login> {
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Por favor completa todos los campos")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.local.completarCampos)));
       return;
     }
 
@@ -37,8 +38,9 @@ class _LoginState extends State<Login> {
         password: password,
       );
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Inicio de sesión exitoso")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.local.sesionExitosa)));
 
       Navigator.pushReplacement(
         context,
@@ -47,13 +49,15 @@ class _LoginState extends State<Login> {
     } on FirebaseAuthException catch (e) {
       String message;
       if (e.code == 'user-not-found') {
-        message = 'No existe un usuario con ese correo.';
+        message = context.local.correoNoEncontrado;
       } else if (e.code == 'wrong-password') {
-        message = 'Contraseña incorrecta.';
+        message = context.local.contrasenaIncorrecta;
       } else {
         message = 'Error: ${e.message}';
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     } finally {
       setState(() => isLoading = false);
     }
@@ -66,27 +70,29 @@ class _LoginState extends State<Login> {
         fit: StackFit.expand,
         children: [
           // Imagen de fondo
-          Image.asset(
-            'assets/images/2.jpg',
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/images/2.jpg', fit: BoxFit.cover),
 
           // Contenedor inferior
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(5),
+              ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 30,
+                  ),
 
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Iniciar Sesión',
+                      Text(
+                        context.local.iniciarSesion,
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -104,7 +110,7 @@ class _LoginState extends State<Login> {
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            hintText: 'Correo electrónico',
+                            hintText: context.local.correoElectronico,
                             prefixIcon: const Icon(Icons.email),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.all(15),
@@ -122,7 +128,7 @@ class _LoginState extends State<Login> {
                           controller: passwordController,
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
-                            hintText: 'Contraseña',
+                            hintText: context.local.contrasena,
                             prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -149,17 +155,26 @@ class _LoginState extends State<Login> {
                             : ElevatedButton(
                                 onPressed: login,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromARGB(162, 125, 131, 59),
-                                  
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 15),
+                                  backgroundColor: const Color.fromARGB(
+                                    162,
+                                    125,
+                                    131,
+                                    59,
+                                  ),
+
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 15,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                 ),
-                                child: const Text(
-                                  'Ingresar',
-                                  style: TextStyle(fontSize: 18, color: Colors.white),
+                                child: Text(
+                                  context.local.ingresar,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                       ),
@@ -171,13 +186,12 @@ class _LoginState extends State<Login> {
                             MaterialPageRoute(builder: (_) => const Register()),
                           );
                         },
-                        child: const Text(
-                          '¿No tienes cuenta? Regístrate',
+                        child: Text(
+                          context.local.noTienesCuenta,
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                       const SizedBox(height: 20),
-
                     ],
                   ),
                 ),

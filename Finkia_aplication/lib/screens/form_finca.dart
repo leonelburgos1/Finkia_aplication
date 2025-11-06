@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:country_state_city_picker/country_state_city_picker.dart';
 import 'package:agrou_aplication/screens/fincas.dart'; // para acceder a la lista compartida
+import 'package:agrou_aplication/utils/localization_extension.dart';
 
 class FormFinca extends StatefulWidget {
   const FormFinca({super.key});
@@ -37,8 +38,8 @@ class _FormFincaState extends State<FormFinca> {
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: primaryYellow,
-        title: const Text(
-          'Registrar Finca',
+        title: Text(
+          context.local.registrarFinca,
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -52,33 +53,36 @@ class _FormFincaState extends State<FormFinca> {
             children: [
               _buildTextField(
                 controller: _nombreController,
-                label: 'Nombre de la Finca',
+                label: context.local.nombreFinca,
                 icon: Icons.house,
-                validator: (v) => v!.isEmpty ? 'Ingrese el nombre' : null,
+                validator: (v) =>
+                    v!.isEmpty ? context.local.ingreseNombre : null,
               ),
               const SizedBox(height: 16),
 
               _buildTextField(
                 controller: _areaController,
-                label: 'Área de la Finca (ha)',
+                label: context.local.areaFinca,
                 icon: Icons.square_foot,
                 keyboardType: TextInputType.number,
-                validator: (v) => v!.isEmpty ? 'Ingrese el área' : null,
+                validator: (v) =>
+                    v!.isEmpty ? context.local.ingreseAreaFinca : null,
               ),
               const SizedBox(height: 16),
 
               _buildTextField(
                 controller: _actividadController,
-                label: 'Actividad Agrícola (Ej: café, papa, maíz...)',
+                label: context.local.actividadAgricola,
                 icon: Icons.agriculture,
-                validator: (v) => v!.isEmpty ? 'Describa la actividad' : null,
+                validator: (v) =>
+                    v!.isEmpty ? context.local.describaActividad : null,
               ),
               const SizedBox(height: 25),
 
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Ubicación de la finca',
+                  context.local.ubicacionFinca,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -119,7 +123,7 @@ class _FormFincaState extends State<FormFinca> {
 
               _buildTextField(
                 controller: _contactoController,
-                label: 'Contacto del Administrador (opcional)',
+                label: context.local.contactoAdministrador,
                 icon: Icons.phone,
                 keyboardType: TextInputType.phone,
               ),
@@ -139,8 +143,8 @@ class _FormFincaState extends State<FormFinca> {
                   elevation: 4,
                 ),
                 onPressed: _guardarFinca,
-                child: const Text(
-                  'Registrar',
+                child: Text(
+                  context.local.registrar,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -159,8 +163,8 @@ class _FormFincaState extends State<FormFinca> {
     if (_formKey.currentState!.validate()) {
       if (countryValue.isEmpty || stateValue.isEmpty || cityValue.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Por favor complete la ubicación 🌍'),
+          SnackBar(
+            content: Text(context.local.completarUbicacion),
             backgroundColor: Colors.orange,
           ),
         );
@@ -169,16 +173,16 @@ class _FormFincaState extends State<FormFinca> {
 
       // 💾 Guardar finca temporalmente en memoria
       FincasData.listaFincas.add({
-        "nombre": _nombreController.text,
-        "area": _areaController.text,
-        "actividad": _actividadController.text,
-        "ubicacion": "$countryValue, $stateValue, $cityValue",
-        "contacto": _contactoController.text,
+        context.local.nombre: _nombreController.text,
+        context.local.area: _areaController.text,
+        context.local.actividad: _actividadController.text,
+        context.local.ubicacion: "$countryValue, $stateValue, $cityValue",
+        context.local.contacto: _contactoController.text,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Finca registrada correctamente 🌱'),
+        SnackBar(
+          content: Text(context.local.fincaRegistrada),
           backgroundColor: successGreen,
         ),
       );
