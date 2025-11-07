@@ -47,5 +47,8 @@
   "confirmarContrasena": "Confirm password",
   "registrarse": "Sign up",
   "yaTienesCuenta": "Already have an account? Log in",
-  "agregarFinca": "Add Farm"
+  "agregarFinca": "Add Farm",
+  "pais": "Country",
+  "ciudad": "City",
+  "departamento": "Department"
 }

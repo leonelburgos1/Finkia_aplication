@@ -1,8 +1,9 @@
 import 'dart:ui';
+import 'package:agrou_aplication/screens/fincas.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'register.dart';
-import 'inicio.dart';
+//import 'inicio.dart';
 import 'package:agrou_aplication/utils/localization_extension.dart';
 
 class Login extends StatefulWidget {
@@ -44,7 +45,7 @@ class _LoginState extends State<Login> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => ResponsiveNavBarPage()),
+        MaterialPageRoute(builder: (_) => const FincasPage()),
       );
     } on FirebaseAuthException catch (e) {
       String message;

@@ -1,4 +1,3 @@
-import 'package:agrou_aplication/l10n/app_localizations.dart';
 import 'package:agrou_aplication/screens/form_finca.dart';
 import 'package:agrou_aplication/screens/fincas.dart';
 import 'package:agrou_aplication/screens/login.dart';
@@ -16,26 +15,42 @@ class ResponsiveNavBarPage extends StatefulWidget {
 
 class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   int selectedIndex = 0;
 
-  // Páginas a mostrar según el botón del BottomNavBar
-  List<Widget> get _pages => [
-    HomeSection(),
-    FincasPage(),
-    FormFinca(),
-    Center(
-      child: Text(
-        AppLocalizations.of(context)!.notificaciones,
-        style: const TextStyle(fontSize: 24),
-      ),
-    ),
-  ];
+  // Lista traducida del menú lateral
+  late List<String> _menuItems;
+
+  @override
+  void initState() {
+    super.initState();
+    // Inicializamos vacía; luego en build la llenamos con traducciones
+    _menuItems = [];
+  }
 
   @override
   Widget build(BuildContext context) {
+    _menuItems = [
+      context.local.acercaDe,
+      context.local.contacto,
+      context.local.configuracion,
+      context.local.salir,
+    ];
+
     final width = MediaQuery.of(context).size.width;
     final bool isLargeScreen = width > 800;
+
+    // Lista de páginas, siempre construida dentro de build para usar context
+    final List<Widget> _pages = [
+      HomeSection(),
+      FincasPage(),
+      FormFinca(),
+      Center(
+        child: Text(
+          context.local.notificaciones,
+          style: const TextStyle(fontSize: 24),
+        ),
+      ),
+    ];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -43,7 +58,6 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
-
         elevation: 0,
         titleSpacing: 0,
         leading: isLargeScreen
@@ -70,19 +84,14 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
         ],
       ),
       drawer: isLargeScreen ? null : _drawer(),
-
-      // ------------------ CUERPO + BOTTOM NAV ------------------
       body: Stack(
         children: [
-          // Contenido principal que cambia según el ícono
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 400),
             switchInCurve: Curves.easeOut,
             switchOutCurve: Curves.easeIn,
             child: _pages[selectedIndex],
           ),
-
-          // BottomNav personalizado
           Positioned(
             bottom: 0,
             left: 0,
@@ -90,7 +99,9 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
             child: CustomBottomNavBar(
               selectedIndex: selectedIndex,
               onItemTapped: (index) {
-                setState(() => selectedIndex = index);
+                setState(() {
+                  selectedIndex = index;
+                });
               },
             ),
           ),
@@ -136,13 +147,7 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   );
 }
 
-final List<String> _menuItems = <String>[
-  'Acerca de',
-  'Contacto',
-  'Configuración',
-  'Salir',
-];
-
+// ------------------ ENUM DEL MENÚ ------------------
 enum Menu { itemOne, itemTwo, itemThree }
 
 // ------------------ PERFIL Y CIERRE DE SESIÓN ------------------
@@ -202,64 +207,7 @@ class HomeSection extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const FormFinca()),
-                  );
-                },
-                icon: const Icon(Icons.add),
-                label: Text(
-                  context.local.agregarFinca,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2B7A0B),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const FincasPage()),
-                  );
-                },
-                icon: const Icon(Icons.list_alt),
-                label: Text(
-                  context.local.misFincas,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF81B622),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
+          // 🔹 Botones eliminados 🔹
           Expanded(
             child: Center(
               child: Image.asset(

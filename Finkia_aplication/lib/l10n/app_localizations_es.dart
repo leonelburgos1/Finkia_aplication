@@ -152,4 +152,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get agregarFinca => 'Agregar Finca';
+
+  @override
+  String get pais => 'País';
+
+  @override
+  String get ciudad => 'Ciudad';
+
+  @override
+  String get departamento => 'Departamento';
 }

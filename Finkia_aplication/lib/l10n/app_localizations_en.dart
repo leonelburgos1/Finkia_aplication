@@ -152,4 +152,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agregarFinca => 'Add Farm';
+
+  @override
+  String get pais => 'Country';
+
+  @override
+  String get ciudad => 'City';
+
+  @override
+  String get departamento => 'Department';
 }

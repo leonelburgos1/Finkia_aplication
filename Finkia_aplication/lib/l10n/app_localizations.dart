@@ -385,6 +385,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Farm'**
   String get agregarFinca;
+
+  /// No description provided for @pais.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get pais;
+
+  /// No description provided for @ciudad.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get ciudad;
+
+  /// No description provided for @departamento.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get departamento;
 }
 
 class _AppLocalizationsDelegate

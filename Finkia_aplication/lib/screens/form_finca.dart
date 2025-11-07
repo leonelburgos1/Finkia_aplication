@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:country_state_city_picker/country_state_city_picker.dart';
-import 'package:agrou_aplication/screens/fincas.dart'; // para acceder a la lista compartida
+import 'package:csc_picker_plus/csc_picker_plus.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:agrou_aplication/utils/localization_extension.dart';
 
 class FormFinca extends StatefulWidget {
@@ -32,6 +33,53 @@ class _FormFincaState extends State<FormFinca> {
     super.dispose();
   }
 
+  // Función para guardar la finca en Firestore
+  Future<void> _guardarFinca() async {
+    if (_formKey.currentState!.validate()) {
+      if (countryValue.isEmpty || stateValue.isEmpty || cityValue.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.local.completarUbicacion),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      try {
+        //para vincular información con el usuario actual
+        final user = FirebaseAuth.instance.currentUser;
+
+        await FirebaseFirestore.instance.collection('fincas').add({
+          'nombre': _nombreController.text.trim(),
+          'area': double.tryParse(_areaController.text.trim()) ?? 0,
+          'actividad': _actividadController.text.trim(),
+          'pais': countryValue,
+          'departamento': stateValue,
+          'ciudad': cityValue,
+          'contacto': _contactoController.text.trim(),
+          'uid': user?.uid,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.local.fincaRegistrada),
+            backgroundColor: successGreen,
+          ),
+        );
+
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al registrar la finca: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +88,10 @@ class _FormFincaState extends State<FormFinca> {
         backgroundColor: primaryYellow,
         title: Text(
           context.local.registrarFinca,
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         elevation: 4,
@@ -59,7 +110,6 @@ class _FormFincaState extends State<FormFinca> {
                     v!.isEmpty ? context.local.ingreseNombre : null,
               ),
               const SizedBox(height: 16),
-
               _buildTextField(
                 controller: _areaController,
                 label: context.local.areaFinca,
@@ -69,7 +119,6 @@ class _FormFincaState extends State<FormFinca> {
                     v!.isEmpty ? context.local.ingreseAreaFinca : null,
               ),
               const SizedBox(height: 16),
-
               _buildTextField(
                 controller: _actividadController,
                 label: context.local.actividadAgricola,
@@ -83,7 +132,7 @@ class _FormFincaState extends State<FormFinca> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   context.local.ubicacionFinca,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: Colors.black87,
@@ -106,15 +155,54 @@ class _FormFincaState extends State<FormFinca> {
                     ),
                   ],
                 ),
-                child: SelectState(
+                child: CSCPickerPlus(
+                  showStates: true,
+                  showCities: true,
+                  countryStateLanguage: CountryStateLanguage.englishOrNative,
+                  cityLanguage: CityLanguage.native,
+                  countryDropdownLabel: context.local.pais,
+                  stateDropdownLabel: context.local.departamento,
+                  cityDropdownLabel: context.local.ciudad,
+                  dropdownDecoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: formBg,
+                    border: Border.all(color: borderGreen, width: 1.5),
+                  ),
+                  disabledDropdownDecoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: formBg,
+                    border: Border.all(color: borderGreen, width: 1.5),
+                  ),
+                  selectedItemStyle: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                  ),
+                  dropdownHeadingStyle: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  dropdownItemStyle: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                  ),
                   onCountryChanged: (value) {
-                    setState(() => countryValue = value);
+                    setState(() {
+                      countryValue = value;
+                      stateValue = "";
+                      cityValue = "";
+                    });
                   },
                   onStateChanged: (value) {
-                    setState(() => stateValue = value);
+                    setState(() {
+                      stateValue = value ?? "";
+                      cityValue = "";
+                    });
                   },
                   onCityChanged: (value) {
-                    setState(() => cityValue = value);
+                    setState(() {
+                      cityValue = value ?? "";
+                    });
                   },
                 ),
               ),
@@ -145,7 +233,7 @@ class _FormFincaState extends State<FormFinca> {
                 onPressed: _guardarFinca,
                 child: Text(
                   context.local.registrar,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -157,38 +245,6 @@ class _FormFincaState extends State<FormFinca> {
         ),
       ),
     );
-  }
-
-  void _guardarFinca() {
-    if (_formKey.currentState!.validate()) {
-      if (countryValue.isEmpty || stateValue.isEmpty || cityValue.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.local.completarUbicacion),
-            backgroundColor: Colors.orange,
-          ),
-        );
-        return;
-      }
-
-      // 💾 Guardar finca temporalmente en memoria
-      FincasData.listaFincas.add({
-        context.local.nombre: _nombreController.text,
-        context.local.area: _areaController.text,
-        context.local.actividad: _actividadController.text,
-        context.local.ubicacion: "$countryValue, $stateValue, $cityValue",
-        context.local.contacto: _contactoController.text,
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.local.fincaRegistrada),
-          backgroundColor: successGreen,
-        ),
-      );
-
-      Navigator.pop(context); // 🔙 Volvemos a la lista
-    }
   }
 
   Widget _buildTextField({

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'splash_screen.dart';
 import 'package:agrou_aplication/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Inicializa Firebase con las opciones generadas automáticamente
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Oculta barra de estado y botones
+  // Oculta barra de estado y botones del sistema
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   runApp(const MyApp());
@@ -25,21 +26,20 @@ class MyApp extends StatelessWidget {
     return WidgetsBindingObserverApp(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        title: 'Finkia',
+
+        // Localización (idiomas)
         localizationsDelegates: const [
-          AppLocalizations.delegate, // Traducciones generadas
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-
-        // 👇 Lista de idiomas soportados
         supportedLocales: const [
           Locale('en'), // Inglés
           Locale('es'), // Español
           Locale('es', 'CO'), // Español (Colombia)
         ],
-
-        // 👇 Detecta automáticamente el idioma del sistema
         localeResolutionCallback: (locale, supportedLocales) {
           for (var supportedLocale in supportedLocales) {
             if (supportedLocale.languageCode == locale?.languageCode) {
@@ -49,9 +49,7 @@ class MyApp extends StatelessWidget {
           return supportedLocales.first;
         },
 
-        title: 'Finkia',
-
-        // 🌞 Tema claro
+        // Tema claro
         theme: ThemeData(
           brightness: Brightness.light,
           scaffoldBackgroundColor: Colors.white,
@@ -63,7 +61,7 @@ class MyApp extends StatelessWidget {
           iconTheme: const IconThemeData(color: Colors.black87),
         ),
 
-        // 🌚 Tema oscuro
+        // Tema oscuro
         darkTheme: ThemeData(
           brightness: Brightness.dark,
           scaffoldBackgroundColor: const Color(0xFF121212),
@@ -75,8 +73,7 @@ class MyApp extends StatelessWidget {
           iconTheme: const IconThemeData(color: Colors.white70),
         ),
 
-        // Cambia según el sistema
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.system, // Cambia según el sistema
 
         home: const SplashScreen(),
       ),
@@ -84,6 +81,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// 🔧 Clase que mantiene el modo inmersivo activo cuando se reanuda la app
 class WidgetsBindingObserverApp extends StatefulWidget {
   final Widget child;
   const WidgetsBindingObserverApp({super.key, required this.child});

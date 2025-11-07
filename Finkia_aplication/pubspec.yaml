@@ -9,8 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: 4.2.0
+  firebase_core: ^4.2.1
   firebase_auth: ^6.1.1
+  cloud_firestore: ^6.0.3
+  csc_picker_plus: ^0.0.3
   video_player: ^2.9.1
   country_state_city_picker: ^1.2.8
   flutter_localizations:

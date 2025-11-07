@@ -47,5 +47,8 @@
   "confirmarContrasena": "Confirmar contraseña",
   "registrarse": "Registrarse",
   "yaTienesCuenta": "¿Ya tienes cuenta? Inicia sesión",
-  "agregarFinca": "Agregar Finca"
+  "agregarFinca": "Agregar Finca",
+  "pais": "País",
+  "ciudad": "Ciudad",
+  "departamento": "Departamento"
 }
