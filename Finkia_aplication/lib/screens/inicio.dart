@@ -1,9 +1,11 @@
 import 'package:agrou_aplication/screens/form_finca.dart';
 import 'package:agrou_aplication/screens/fincas.dart';
+import 'package:agrou_aplication/screens/gastos.dart';
 import 'package:agrou_aplication/screens/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:agrou_aplication/utils/localization_extension.dart';
+import 'package:agrou_aplication/screens/gastos.dart';
 
 // ------------------ PÁGINA PRINCIPAL ------------------
 class ResponsiveNavBarPage extends StatefulWidget {
@@ -53,61 +55,113 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
     ];
 
     return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
-        elevation: 0,
-        titleSpacing: 0,
-        leading: isLargeScreen
-            ? null
-            : IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-              ),
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/images/Finkia_Transparente.png', height: 40),
-              if (isLargeScreen) Expanded(child: _navBarItems()),
-            ],
+    key: _scaffoldKey,
+    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    drawer: isLargeScreen ? null : _drawer(),
+    body: Stack(
+      children: [
+        // 🖼️ Imagen del header cubriendo toda la parte superior
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Image.asset(
+            'assets/images/header2.png',
+            fit: BoxFit.cover,
+            height: 100, 
+            // puedes ajustar el alto del header
           ),
         ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(child: _ProfileIcon()),
+      // 🔘 Botones personalizados encima del header
+      Positioned(
+        top: 25,
+        left: 16,
+        child: Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white.withOpacity(0.25),
+            border: Border.all(color: Colors.white, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                blurRadius: 6,
+                offset: const Offset(2, 2),
+              ),
+            ],
           ),
-        ],
+          child: IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white, size: 32),
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            splashRadius: 28,
+          ),
+        ),
       ),
-      drawer: isLargeScreen ? null : _drawer(),
-      body: Stack(
-        children: [
-          AnimatedSwitcher(
+
+      // 👤 Botón de perfil (derecha)
+// 👤 Botón de perfil (derecha)
+      Positioned(
+          top: 25,
+          right: 16,
+          child: Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withOpacity(0.25),
+              border: Border.all(color: Colors.white, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 6,
+                  offset: const Offset(2, 2),
+                ),
+              ],
+            ),
+            // 👇 Aquí usamos directamente el widget _ProfileIcon()
+            child: const _ProfileIcon(),
+          ),
+        ),
+
+
+        // 🌿 Contenido principal (debajo del header)
+        Padding(
+          padding: const EdgeInsets.only(top: 100), // deja espacio debajo del header
+          child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 400),
             switchInCurve: Curves.easeOut,
             switchOutCurve: Curves.easeIn,
             child: _pages[selectedIndex],
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: CustomBottomNavBar(
-              selectedIndex: selectedIndex,
-              onItemTapped: (index) {
+        ),
+
+        // 🔹 Bottom navigation bar
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: CustomBottomNavBar(
+            selectedIndex: selectedIndex,
+            onItemTapped: (index) {
+              if (index == 2) {
+                // 👉 Cuando se toca el botón central, abrir GastosPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GastosPage()),
+                );
+              } else {
+                // Cambiar la pestaña normalmente
                 setState(() {
                   selectedIndex = index;
                 });
-              },
-            ),
+              }
+            },
           ),
-        ],
-      ),
-    );
+
+        ),
+      ],
+    ),
+  );
+
   }
 
   // ------------------ MENÚ LATERAL ------------------
@@ -157,7 +211,7 @@ class _ProfileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<Menu>(
-      icon: const Icon(Icons.person),
+      icon: const Icon(Icons.person, color: Colors.white,),
       offset: const Offset(0, 40),
       onSelected: (Menu item) async {
         switch (item) {
@@ -302,7 +356,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         child: Container(
           decoration: isSelected
               ? BoxDecoration(
-                  color: const Color(0xFF81B622),
+                  color: const Color.fromARGB(255, 164, 231, 38),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: Colors.black.withOpacity(0.3),
@@ -315,7 +369,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             icon,
             color: isSelected
                 ? Colors.white
-                : (isDarkMode ? Colors.white70 : Colors.black87),
+                : (isDarkMode ? Colors.white70 : const Color.fromARGB(255, 38, 95, 5)),
             size: isSelected ? 35 : 28,
           ),
         ),
