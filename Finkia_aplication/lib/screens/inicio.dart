@@ -57,7 +57,9 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
     return Scaffold(
     key: _scaffoldKey,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    drawer: isLargeScreen ? null : _drawer(),
+    drawerEnableOpenDragGesture: true, // permite abrir con swipe
+    drawerEdgeDragWidth: 100, // sensibilidad del swipe
+    drawer: _drawer(),
     body: Stack(
       children: [
         // 🖼️ Imagen del header cubriendo toda la parte superior
@@ -97,30 +99,6 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
           ),
         ),
       ),
-
-      // 👤 Botón de perfil (derecha)
-// 👤 Botón de perfil (derecha)
-      Positioned(
-          top: 25,
-          right: 16,
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.25),
-              border: Border.all(color: Colors.white, width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  blurRadius: 6,
-                  offset: const Offset(2, 2),
-                ),
-              ],
-            ),
-            // 👇 Aquí usamos directamente el widget _ProfileIcon()
-            child: const _ProfileIcon(),
-          ),
-        ),
 
 
         // 🌿 Contenido principal (debajo del header)
@@ -165,20 +143,101 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   }
 
   // ------------------ MENÚ LATERAL ------------------
-  Widget _drawer() => Drawer(
-    child: ListView(
-      children: _menuItems
-          .map(
-            (item) => ListTile(
-              onTap: () {
-                _scaffoldKey.currentState?.openEndDrawer();
-              },
-              title: Text(item),
+Widget _drawer() {
+  return TweenAnimationBuilder<double>(
+    duration: const Duration(milliseconds: 500),
+    curve: Curves.easeOutCubic,
+    tween: Tween(begin: -250.0, end: 0.0),
+    builder: (context, value, child) {
+      return Transform.translate(
+        offset: Offset(value, 0),
+        child: Container(
+          width: 260,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 38, 95, 5), // Azul oscuro
+                Color.fromARGB(255, 164, 231, 38), // Azul medio
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-          )
-          .toList(),
-    ),
+          ),
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 30),
+                // 🪞 Logo o imagen
+                Center(
+                  child: CircleAvatar(
+                    radius: 45,
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundImage: AssetImage('assets/images/trabajador1.jpg'),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                const Divider(color: Colors.white24, thickness: 1),
+
+                // 🧭 Ítems del menú
+                ...[
+                  {'icon': Icons.info_outline, 'text': context.local.acercaDe},
+                  {'icon': Icons.contact_mail_outlined, 'text': context.local.contacto},
+                  {'icon': Icons.settings_outlined, 'text': context.local.configuracion},
+                  {'icon': Icons.logout, 'text': context.local.salir},
+                ].map((item) {
+                  return ListTile(
+                    leading: Icon(item['icon'] as IconData, color: Colors.white),
+                    title: Text(
+                      item['text'] as String,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    onTap: () async {
+                      if (item['text'] == context.local.salir) {
+                        await FirebaseAuth.instance.signOut();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const Login()),
+                          (route) => false,
+                        );
+                      } else {
+                        _scaffoldKey.currentState?.openEndDrawer();
+                      }
+                    },
+                  );
+                }).toList(),
+                const Spacer(),
+                // 🔹 Pie decorativo con efecto vidrio
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '© 2025 Finkia',
+                      style: TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
   );
+}
+
 
   // ------------------ NAVBAR SUPERIOR ------------------
   Widget _navBarItems() => Row(
@@ -201,51 +260,6 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   );
 }
 
-// ------------------ ENUM DEL MENÚ ------------------
-enum Menu { itemOne, itemTwo, itemThree }
-
-// ------------------ PERFIL Y CIERRE DE SESIÓN ------------------
-class _ProfileIcon extends StatelessWidget {
-  const _ProfileIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<Menu>(
-      icon: const Icon(Icons.person, color: Colors.white,),
-      offset: const Offset(0, 40),
-      onSelected: (Menu item) async {
-        switch (item) {
-          case Menu.itemOne:
-            break;
-          case Menu.itemTwo:
-            break;
-          case Menu.itemThree:
-            await FirebaseAuth.instance.signOut();
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const Login()),
-              (route) => false,
-            );
-            break;
-        }
-      },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-        PopupMenuItem<Menu>(
-          value: Menu.itemOne,
-          child: Text(context.local.cuenta),
-        ),
-        PopupMenuItem<Menu>(
-          value: Menu.itemTwo,
-          child: Text(context.local.configuracion),
-        ),
-        PopupMenuItem<Menu>(
-          value: Menu.itemThree,
-          child: Text(context.local.salir),
-        ),
-      ],
-    );
-  }
-}
 
 // ------------------ SECCIÓN PRINCIPAL (HOME) ------------------
 class HomeSection extends StatelessWidget {
