@@ -10,6 +10,7 @@ class FincasPage extends StatefulWidget {
 
   @override
   State<FincasPage> createState() => _FincasPageState();
+
 }
 
 class _FincasPageState extends State<FincasPage> {
@@ -28,146 +29,224 @@ class _FincasPageState extends State<FincasPage> {
         .snapshots();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.appBarColor,
-        title: Text(
-          context.local.misFincas,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 2,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
+@override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        body: Stack(
           children: [
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _fincasStream,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return _buildEmptyState();
-                  }
-
-                  final fincas = snapshot.data!.docs;
-
-                  return ListView.builder(
-                    itemCount: fincas.length,
-                    itemBuilder: (context, index) {
-                      final data = fincas[index].data() as Map<String, dynamic>;
-
-                      return Card(
-                        color: AppColors.cardColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 3,
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                data['nombre'] ?? context.local.sinNombre,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                "🌎 ${context.local.pais}: ${data['pais'] ?? context.local.noEspecificado}\n"
-                                "🏞️ ${context.local.departamento}: ${data['departamento'] ?? context.local.noEspecificado}\n"
-                                "🌍 ${context.local.ciudad}: ${data['ciudad'] ?? context.local.desconocida}\n"
-                                "🌾 ${context.local.actividad}: ${data['actividad'] ?? context.local.noEspecificado}\n"
-                                "📐 ${context.local.area}: ${data['area'] ?? context.local.noEspecificado} ha\n"
-                                "📞 ${context.local.contacto}: ${data['contacto'] ?? context.local.noEspecificado}\n",
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black54,
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Text(context.local.ingresar),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ResponsiveNavBarPage(
-                                          fincaId:
-                                              fincas[index].id, // aquí va el id
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
+            // -------------------------------
+            //    HEADER CON IMAGEN (NUEVO)
+            // -------------------------------
+            Positioned(
+              top: -10,
+              left: 0,
+              right: 0,
+              child: Image.asset(
+                'assets/images/misFincas.jpg',   // <-- CAMBIA LA IMAGEN SI QUIERES
+                height: 120,
+                fit: BoxFit.cover,
               ),
             ),
 
-            const SizedBox(height: 30),
-
-            Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: Text(context.local.registrarFinca),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 15,
+            // -------------------------------
+            //       BOTÓN ATRÁS (NUEVO)
+            // -------------------------------
+            Positioned(
+              top: 25,
+              left: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.25),
+                  border: Border.all(color: Colors.white, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: Offset(2, 2),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+
+            // -----------------------------------------
+            //   CONTENIDO REAL DE LA PÁGINA (LISTA)
+            // -----------------------------------------
+            Padding(
+              padding: const EdgeInsets.only(top: 110, left: 16, right: 16),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _fincasStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return _buildEmptyState();
+                        }
+
+                        final fincas = snapshot.data!.docs;
+
+                        return ListView.builder(
+                          itemCount: fincas.length,
+                          itemBuilder: (context, index) {
+                            final data = fincas[index].data() as Map<String, dynamic>;
+
+                            return Card(
+                              color: AppColors.cardColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 3,
+                              margin: const EdgeInsets.symmetric(vertical: 10),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      data['nombre'] ?? context.local.sinNombre,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 25,
+                                        color: Color(0xFF2E7D32),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          _infoItem(Icons.public, "${context.local.pais}: ${data['pais'] ?? context.local.noEspecificado}"),
+                                          _infoItem(Icons.map, "${context.local.departamento}: ${data['departamento'] ?? context.local.noEspecificado}"),
+                                          _infoItem(Icons.location_city, "${context.local.ciudad}: ${data['ciudad'] ?? context.local.desconocida}"),
+                                          _infoItem(Icons.agriculture, "${context.local.actividad}: ${data['actividad'] ?? context.local.noEspecificado}"),
+                                          _infoItem(Icons.straighten, "${context.local.area}: ${data['area'] ?? context.local.noEspecificado} ha"),
+                                          _infoItem(Icons.phone, "${context.local.contacto}: ${data['contacto'] ?? context.local.noEspecificado}"),
+                                        ],
+                                      ),
+                                    const SizedBox(height: 8),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Color.fromARGB(255, 164, 231, 38),
+                                              Color(0xFF2E7D32),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.transparent,
+                                            shadowColor: Colors.transparent,
+                                            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => ResponsiveNavBarPage(
+                                                  fincaId: fincas[index].id,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(
+                                            context.local.ingresar,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const FormFinca()),
-                    ).then((_) => setState(() {}));
-                  },
-                ),
+
+                  const SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color.fromARGB(255, 164, 231, 38),
+                              Color(0xFF2E7D32),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.add, color: Colors.white, size: 25),
+                          label: Text(
+                            context.local.registrarFinca,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 15,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const FormFinca()),
+                            ).then((_) => setState(() {}));
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+                ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }
+
 
   Widget _buildEmptyState() {
     return Center(
@@ -197,11 +276,36 @@ class _FincasPageState extends State<FincasPage> {
       ),
     );
   }
+    Widget _infoItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3.5),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: const Color.fromARGB(196, 46, 125, 50),  // íconos minimalistas
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 15,
+                color: Color.fromARGB(255, 0, 0, 0),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }
 
 class AppColors {
-  static const Color backgroundColor = Color(0xFFEAF4E1);
-  static const Color appBarColor = Color(0xFF2B7A0B);
-  static const Color primaryColor = Color(0xFF81B622);
-  static const Color cardColor = Color(0xFFD9F8C4);
+  static const Color backgroundColor = Color.fromARGB(255, 255, 255, 255);
+  static const Color primaryColor = Color.fromARGB(255, 73, 95, 33);
+  static const Color cardColor = Color.fromARGB(255, 255, 255, 255);
 }

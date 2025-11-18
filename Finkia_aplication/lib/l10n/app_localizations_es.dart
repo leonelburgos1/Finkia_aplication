@@ -51,7 +51,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cerrado => 'Cerrado';
 
   @override
-  String get registrarFinca => 'Registrar finca';
+  String get registrarFinca => 'Registrar Finca';
 
   @override
   String get ingreseNombre => 'Ingrese el nombre';
