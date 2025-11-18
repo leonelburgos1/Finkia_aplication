@@ -19,7 +19,7 @@ class _FincasPageState extends State<FincasPage> {
   @override
   void initState() {
     super.initState();
-    // Escucha en tiempo real los cambios en la colección "fincas"
+
     final user = FirebaseAuth.instance.currentUser;
 
     _fincasStream = _firestore
@@ -48,7 +48,6 @@ class _FincasPageState extends State<FincasPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            // 🔥 StreamBuilder para escuchar los datos de Firebase
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _fincasStream,
@@ -117,8 +116,10 @@ class _FincasPageState extends State<FincasPage> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) =>
-                                            const ResponsiveNavBarPage(),
+                                        builder: (_) => ResponsiveNavBarPage(
+                                          fincaId:
+                                              fincas[index].id, // aquí va el id
+                                        ),
                                       ),
                                     );
                                   },
@@ -134,15 +135,12 @@ class _FincasPageState extends State<FincasPage> {
               ),
             ),
 
-            // 🌿 Botón más arriba (~1 cm del borde)
             const SizedBox(height: 30),
 
             Align(
               alignment: Alignment.center,
               child: Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 16.0,
-                ), // más arriba del borde
+                padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.add),
                   label: Text(context.local.registrarFinca),
@@ -171,7 +169,6 @@ class _FincasPageState extends State<FincasPage> {
     );
   }
 
-  // 🌾 Estado cuando no hay fincas
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -202,7 +199,6 @@ class _FincasPageState extends State<FincasPage> {
   }
 }
 
-// 🎨 Colores
 class AppColors {
   static const Color backgroundColor = Color(0xFFEAF4E1);
   static const Color appBarColor = Color(0xFF2B7A0B);
