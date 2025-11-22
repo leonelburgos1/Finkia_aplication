@@ -7,9 +7,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:agrou_aplication/utils/localization_extension.dart';
 
-// ------------------ PÁGINA PRINCIPAL ------------------
+// ======================= PALETA DE COLORES =======================
+
+const Color darkBg = Color.fromARGB(255, 1, 34, 2);
+const Color primaryDark = Color.fromARGB(255, 2, 78, 7);
+const Color primaryLight = Color.fromARGB(210, 2, 78, 7);
+const Color accentLight = Color.fromARGB(255, 235, 235, 235);
+
+// ================================================================
+//                       PÁGINA PRINCIPAL
+// ================================================================
 class ResponsiveNavBarPage extends StatefulWidget {
-  final String fincaId; // <--- ahora recibe la finca seleccionada
+  final String fincaId;
 
   const ResponsiveNavBarPage({super.key, required this.fincaId});
 
@@ -21,18 +30,12 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedIndex = 0;
 
-  // Lista traducida del menú lateral
-  late List<String> _menuItems;
-
-  @override
-  void initState() {
-    super.initState();
-    // Inicializamos vacía; luego en build la llenamos con traducciones
-    _menuItems = [];
-  }
+  late List<String> _menuItems = [];
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     _menuItems = [
       context.local.acercaDe,
       context.local.contacto,
@@ -43,11 +46,10 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
     final width = MediaQuery.of(context).size.width;
     final bool isLargeScreen = width > 800;
 
-    // Lista de páginas, siempre construida dentro de build para usar context
     final List<Widget> _pages = [
-      HomeSection(),
-      FincasPage(),
-      FormFinca(),
+      const HomeSection(),
+      const FincasPage(),
+      const FormFinca(),
       Center(
         child: Text(
           context.local.notificaciones,
@@ -59,24 +61,26 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawerEnableOpenDragGesture: true, // permite abrir con swipe
-      drawerEdgeDragWidth: 100, // sensibilidad del swipe
-      drawer: _drawer(),
+      drawerEnableOpenDragGesture: true,
+      drawerEdgeDragWidth: 100,
+      drawer: _drawer(isDark),
       body: Stack(
         children: [
-          // 🖼️ Imagen del header cubriendo toda la parte superior
+          // ================= HEADER DINÁMICO =================
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Image.asset(
-              'assets/images/header2.png',
+              isDark
+                  ? 'assets/images/header2.png'
+                  : 'assets/images/gastos.png',
               fit: BoxFit.cover,
               height: 100,
-              // puedes ajustar el alto del header
             ),
           ),
-          // 🔘 Botones personalizados encima del header
+
+          // ================== BOTÓN MENÚ =====================
           Positioned(
             top: 25,
             left: 16,
@@ -102,20 +106,16 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
             ),
           ),
 
-          // 🌿 Contenido principal (debajo del header)
+          // =================== CONTENIDO ======================
           Padding(
-            padding: const EdgeInsets.only(
-              top: 100,
-            ), // deja espacio debajo del header
+            padding: const EdgeInsets.only(top: 100),
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 400),
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeIn,
               child: _pages[selectedIndex],
             ),
           ),
 
-          // 🔹 Bottom navigation bar
+          // ============= BOTTOM NAV BAR ======================
           Positioned(
             bottom: 0,
             left: 0,
@@ -124,7 +124,6 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
               selectedIndex: selectedIndex,
               onItemTapped: (index) {
                 if (index == 2) {
-                  // 👉 Botón central: abrir GastosPage
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -132,7 +131,6 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                     ),
                   );
                 } else if (index == 1) {
-                  // 👉 Nueva ventana de Estadísticas (segundo ícono)
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -141,9 +139,7 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                     ),
                   );
                 } else {
-                  setState(() {
-                    selectedIndex = index;
-                  });
+                  setState(() => selectedIndex = index);
                 }
               },
             ),
@@ -153,8 +149,10 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
     );
   }
 
-  // ------------------ MENÚ LATERAL ------------------
-  Widget _drawer() {
+  // ================================================================
+  //                           DRAWER
+  // ================================================================
+  Widget _drawer(bool isDark) {
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOutCubic,
@@ -164,12 +162,11 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
           offset: Offset(value, 0),
           child: Container(
             width: 260,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 38, 95, 5), // Verde oscuro
-                  Color.fromARGB(255, 164, 231, 38), // Verde medio
-                ],
+                colors: isDark
+                    ? [primaryDark, darkBg]
+                    : [Color.fromARGB(255, 38, 95, 5), Color.fromARGB(255, 164, 231, 38)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -179,40 +176,32 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30),
-                  // 🪞 Logo o imagen
                   Center(
                     child: CircleAvatar(
                       radius: 45,
                       backgroundColor: Colors.white.withOpacity(0.2),
-                      backgroundImage: const AssetImage(
-                        'assets/images/trabajador1.jpg',
-                      ),
+                      backgroundImage:
+                          const AssetImage('assets/images/trabajador1.jpg'),
                     ),
                   ),
                   const SizedBox(height: 15),
-                  const Divider(color: Colors.white24, thickness: 1),
+                  const Divider(color: Color.fromARGB(59, 255, 255, 255), thickness: 1),
 
-                  // 🧭 Ítems del menú
+                  // Ítems del menú
                   ...[
-                    {
-                      'icon': Icons.info_outline,
-                      'text': context.local.acercaDe,
-                    },
+                    {'icon': Icons.info_outline, 'text': context.local.acercaDe},
                     {
                       'icon': Icons.contact_mail_outlined,
-                      'text': context.local.contacto,
+                      'text': context.local.contacto
                     },
                     {
                       'icon': Icons.settings_outlined,
-                      'text': context.local.configuracion,
+                      'text': context.local.configuracion
                     },
                     {'icon': Icons.logout, 'text': context.local.salir},
                   ].map((item) {
                     return ListTile(
-                      leading: Icon(
-                        item['icon'] as IconData,
-                        color: Colors.white,
-                      ),
+                      leading: Icon(item['icon'] as IconData, color: Colors.white),
                       title: Text(
                         item['text'] as String,
                         style: const TextStyle(
@@ -236,12 +225,11 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                     );
                   }).toList(),
                   const Spacer(),
-                  // 🔹 Pie decorativo con efecto vidrio
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(16),
@@ -262,47 +250,32 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
       },
     );
   }
-
-  // ------------------ NAVBAR SUPERIOR ------------------
-  Widget _navBarItems() => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: _menuItems
-        .map(
-          (item) => InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 24.0,
-                horizontal: 16,
-              ),
-              child: Text(item, style: const TextStyle(fontSize: 18)),
-            ),
-          ),
-        )
-        .toList(),
-  );
 }
 
-// ------------------ SECCIÓN PRINCIPAL (HOME) ------------------
+// ================================================================
+//                       HOME SECTION
+// ================================================================
 class HomeSection extends StatelessWidget {
   const HomeSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
-      color: const Color.fromARGB(255, 255, 255, 255),
+      color: isDark ? darkBg : Colors.white,
       width: double.infinity,
       height: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const SizedBox(height: 30),
-          // 🔹 Botones eliminados 🔹
           Expanded(
             child: Center(
               child: Image.asset(
-                'assets/images/Finkia_Transparente.png',
+                isDark
+                    ? 'assets/images/Finkia_Transparente.png'
+                    : 'assets/images/Finkia_Transparente.png',
                 fit: BoxFit.contain,
               ),
             ),
@@ -313,7 +286,9 @@ class HomeSection extends StatelessWidget {
   }
 }
 
-// ------------------ CUSTOM BOTTOM NAV BAR ------------------
+// ================================================================
+//                    CUSTOM BOTTOM NAV BAR
+// ================================================================
 class CustomBottomNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
@@ -333,6 +308,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
+
     double sectionWidth = size.width / 4;
 
     final List<double> positions = [
@@ -358,17 +334,14 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             children: [
               CustomPaint(
                 size: Size(size.width, 90),
-                painter: BNBCustomPainter(
-                  position: position,
-                  isDarkMode: isDarkMode,
-                ),
+                painter:
+                    BNBCustomPainter(position: position, isDarkMode: isDarkMode),
               ),
               Positioned.fill(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _buildNavIcon(Icons.home, 0, isDarkMode),
-                    // <-- aquí cambié el icono de "hoja" a "estadística"
                     _buildNavIcon(Icons.bar_chart_rounded, 1, isDarkMode),
                     _buildNavIcon(Icons.add_circle_outline, 2, isDarkMode),
                     _buildNavIcon(Icons.notifications, 3, isDarkMode),
@@ -390,14 +363,19 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutBack,
-        transform: Matrix4.translationValues(0, isSelected ? -20 : -5, 0),
+        transform:
+            Matrix4.translationValues(0, isSelected ? -20 : -5, 0),
         child: Container(
           decoration: isSelected
               ? BoxDecoration(
-                  color: const Color.fromARGB(255, 164, 231, 38),
+                    color: isDarkMode
+                    ? const Color.fromARGB(255, 32, 138, 23):
+                      const Color.fromARGB(255, 164, 231, 38),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.black.withOpacity(0.3),
+                  color: isDarkMode
+                    ? const Color.fromARGB(255, 6, 167, 33).withOpacity(0.3):
+                      const Color.fromARGB(255, 38, 95, 5).withOpacity(0.3),
                     width: 2,
                   ),
                 )
@@ -405,11 +383,8 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           padding: const EdgeInsets.all(10),
           child: Icon(
             icon,
-            color: isSelected
-                ? Colors.white
-                : (isDarkMode
-                      ? Colors.white70
-                      : const Color.fromARGB(255, 38, 95, 5)),
+            color:
+                isSelected ? Colors.white : (isDarkMode ? Colors.white : primaryDark),
             size: isSelected ? 35 : 28,
           ),
         ),
@@ -418,7 +393,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   }
 }
 
-// ------------------ PINTOR RECTO CON HUECO ------------------
+// ================================================================
+//                      PINTOR NAV BAR
+// ================================================================
 class BNBCustomPainter extends CustomPainter {
   final double position;
   final bool isDarkMode;
@@ -432,32 +409,27 @@ class BNBCustomPainter extends CustomPainter {
 
     final path = Path()..moveTo(0, height);
 
-    // Línea recta hasta el hueco
     path.lineTo(centerX - 35, height);
-
-    // Curva hacia abajo (hueco)
     path.quadraticBezierTo(centerX - 20, height + 25, centerX, height + 25);
     path.quadraticBezierTo(centerX + 20, height + 25, centerX + 35, height);
-
-    // Línea hasta el final
     path.lineTo(size.width, height);
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
 
-    // 🌑 Sombra superior
     final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.25)
+      ..color = const Color.fromARGB(155, 1, 121, 27).withOpacity(0.25)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+
     canvas.save();
     canvas.translate(0, -4);
     canvas.drawPath(path, shadowPaint);
     canvas.restore();
 
-    // 🎨 Color de la barra (según modo)
     final paint = Paint()
-      ..color = isDarkMode ? const Color(0xFF1E1E1E) : Colors.white
+      ..color = isDarkMode ? Color.fromARGB(210, 2, 78, 7) : Colors.white
       ..style = PaintingStyle.fill;
+
     canvas.drawPath(path, paint);
   }
 

@@ -19,6 +19,7 @@ class _RegisterState extends State<Register> {
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
   bool isLoading = false;
 
   Future<void> register() async {
@@ -34,9 +35,8 @@ class _RegisterState extends State<Register> {
     }
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.local.camposObligatorios)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.local.camposObligatorios)));
       return;
     }
 
@@ -48,18 +48,16 @@ class _RegisterState extends State<Register> {
         password: password,
       );
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.local.registroExitoso)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.local.registroExitoso)));
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const Login()),
       );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: ${e.message}")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error: ${e.message}")));
     } finally {
       setState(() => isLoading = false);
     }
@@ -67,31 +65,32 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Imagen de fondo
+          // Fondo según tema
           Image.asset(
-            'assets/images/register_6.jpg', // usa la misma imagen que en login
+            isDark
+                ? 'assets/images/register_dark.png'
+                : 'assets/images/register_6.jpg', // cambia esta si quieres
             fit: BoxFit.cover,
           ),
 
-          // Contenedor inferior translúcido
+          // Panel inferior con blur
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(5),
-              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 30,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -100,94 +99,133 @@ class _RegisterState extends State<Register> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: isDark
+                              ? Colors.white
+                              : const Color.fromARGB(221, 255, 255, 255),
                         ),
                       ),
+
                       const SizedBox(height: 30),
 
-                      // Campo correo
+                      // Campo email
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: TextField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
                           decoration: InputDecoration(
                             hintText: context.local.correoElectronico,
-                            prefixIcon: const Icon(Icons.email),
+                            hintStyle: TextStyle(
+                              color:
+                                  isDark ? Colors.white70 : Colors.grey[700],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.email,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(15),
+                            contentPadding: const EdgeInsets.all(15),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 15),
 
                       // Campo contraseña
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: TextField(
                           controller: passwordController,
                           obscureText: _obscurePassword,
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
                           decoration: InputDecoration(
                             hintText: context.local.contrasena,
-                            prefixIcon: const Icon(Icons.lock),
+                            hintStyle: TextStyle(
+                              color:
+                                  isDark ? Colors.white70 : Colors.grey[700],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility,
+                                color:
+                                    isDark ? Colors.white70 : Colors.black54,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
+                              onPressed: () =>
+                                  setState(() => _obscurePassword = !_obscurePassword),
                             ),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.all(15),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 15),
 
-                      // Campo confirmar contraseña
+                      // Confirmar contraseña
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: TextField(
                           controller: confirmPasswordController,
                           obscureText: _obscureConfirmPassword,
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
                           decoration: InputDecoration(
                             hintText: context.local.confirmarContrasena,
-                            prefixIcon: const Icon(Icons.lock_outline),
+                            hintStyle: TextStyle(
+                              color:
+                                  isDark ? Colors.white70 : Colors.grey[700],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscureConfirmPassword
                                     ? Icons.visibility_off
                                     : Icons.visibility,
+                                color:
+                                    isDark ? Colors.white70 : Colors.black54,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureConfirmPassword =
-                                      !_obscureConfirmPassword;
-                                });
-                              },
+                              onPressed: () => setState(() =>
+                                  _obscureConfirmPassword = !_obscureConfirmPassword),
                             ),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.all(15),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 25),
 
-                      // Botón de registro
+                      // Botón registrar
                       SizedBox(
                         width: double.infinity,
                         child: isLoading
@@ -196,14 +234,9 @@ class _RegisterState extends State<Register> {
                                 onPressed: register,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color.fromARGB(
-                                    162,
-                                    125,
-                                    131,
-                                    59,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 15,
-                                  ),
+                                      162, 125, 131, 59),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
@@ -217,9 +250,10 @@ class _RegisterState extends State<Register> {
                                 ),
                               ),
                       ),
+
                       const SizedBox(height: 10),
 
-                      // Botón para ir al login
+                      // Ir al login
                       TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
@@ -229,9 +263,14 @@ class _RegisterState extends State<Register> {
                         },
                         child: Text(
                           context.local.yaTienesCuenta,
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: isDark
+                                ? Colors.white
+                                : const Color.fromARGB(221, 255, 255, 255),
+                          ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
                     ],
                   ),

@@ -3,7 +3,6 @@ import 'package:agrou_aplication/screens/fincas.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'register.dart';
-//import 'inicio.dart';
 import 'package:agrou_aplication/utils/localization_extension.dart';
 
 class Login extends StatefulWidget {
@@ -25,9 +24,8 @@ class _LoginState extends State<Login> {
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.local.completarCampos)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.local.completarCampos)));
       return;
     }
 
@@ -39,9 +37,8 @@ class _LoginState extends State<Login> {
         password: password,
       );
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.local.sesionExitosa)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.local.sesionExitosa)));
 
       Navigator.pushReplacement(
         context,
@@ -56,9 +53,8 @@ class _LoginState extends State<Login> {
       } else {
         message = 'Error: ${e.message}';
       }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     } finally {
       setState(() => isLoading = false);
     }
@@ -66,29 +62,32 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Imagen de fondo
-          Image.asset('assets/images/2.jpg', fit: BoxFit.cover),
+          // Fondo según tema
+          Image.asset(
+            isDark
+                ? 'assets/images/sesion_dark.png'
+                : 'assets/images/2.jpg',
+            fit: BoxFit.cover,
+          ),
 
-          // Contenedor inferior
+          // Panel inferior con blur
           Align(
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(5),
-              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 30,
-                  ),
-
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+  
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -97,45 +96,74 @@ class _LoginState extends State<Login> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: isDark ? Colors.white : const Color.fromARGB(221, 255, 255, 255),
                         ),
                       ),
+
                       const SizedBox(height: 30),
-                      // Campo de correo con fondo blanco translúcido
+
+                      // Campo de email
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: TextField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
                           decoration: InputDecoration(
                             hintText: context.local.correoElectronico,
-                            prefixIcon: const Icon(Icons.email),
+                            hintStyle: TextStyle(
+                              color:
+                                  isDark ? Colors.white70 : Colors.grey[700],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.email,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.all(15),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 15),
-                      // Campo de contraseña con fondo blanco translúcido
+
+                      // Campo de contraseña
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: isDark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: TextField(
                           controller: passwordController,
                           obscureText: _obscurePassword,
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
                           decoration: InputDecoration(
                             hintText: context.local.contrasena,
-                            prefixIcon: const Icon(Icons.lock),
+                            hintStyle: TextStyle(
+                              color:
+                                  isDark ? Colors.white70 : Colors.grey[700],
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock,
+                              color: isDark ? Colors.white70 : Colors.black54,
+                            ),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility,
+                                color: isDark ? Colors.white70 : Colors.black54,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -148,7 +176,10 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 25),
+
+                      // Botón Ingresar
                       SizedBox(
                         width: double.infinity,
                         child: isLoading
@@ -156,16 +187,13 @@ class _LoginState extends State<Login> {
                             : ElevatedButton(
                                 onPressed: login,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromARGB(
-                                    162,
-                                    125,
-                                    131,
-                                    59,
-                                  ),
-
+                                  backgroundColor: isDark
+                                      ? const Color.fromARGB(
+                                          162, 125, 131, 59)
+                                      : const Color.fromARGB(
+                                          162, 125, 131, 59),
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 15,
-                                  ),
+                                      vertical: 15),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
@@ -179,19 +207,26 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                       ),
+
                       const SizedBox(height: 10),
+
+                      // Botón registrar
                       TextButton(
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (_) => const Register()),
+                            MaterialPageRoute(
+                                builder: (_) => const Register()),
                           );
                         },
                         child: Text(
                           context.local.noTienesCuenta,
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: isDark ? Colors.white : const Color.fromARGB(221, 255, 255, 255),
+                          ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
                     ],
                   ),

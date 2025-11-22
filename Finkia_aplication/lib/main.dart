@@ -6,10 +6,15 @@ import 'splash_screen.dart';
 import 'package:agrou_aplication/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+/// 🎨 PALETA DE COLORES
+const Color darkBg = Color(0xFF191A19);
+const Color primaryDark = Color(0xFF1E5128);
+const Color primaryLight = Color(0xFF4E9F3D);
+const Color accentLight = Color(0xFFD8E9A8);
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializa Firebase con las opciones generadas automáticamente
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Oculta barra de estado y botones del sistema
@@ -28,7 +33,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Finkia',
 
-        // Localización (idiomas)
+        // 🌎 Localización
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -36,9 +41,9 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [
-          Locale('en'), // Inglés
-          Locale('es'), // Español
-          Locale('es', 'CO'), // Español (Colombia)
+          Locale('en'),
+          Locale('es'),
+          Locale('es', 'CO'),
         ],
         localeResolutionCallback: (locale, supportedLocales) {
           for (var supportedLocale in supportedLocales) {
@@ -49,10 +54,14 @@ class MyApp extends StatelessWidget {
           return supportedLocales.first;
         },
 
-        // Tema claro
+        // ☀️ TEMA CLARO CON TU PALETA
         theme: ThemeData(
           brightness: Brightness.light,
           scaffoldBackgroundColor: Colors.white,
+          colorScheme: const ColorScheme.light(
+            primary: primaryLight,
+            secondary: accentLight,
+          ),
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
@@ -61,19 +70,24 @@ class MyApp extends StatelessWidget {
           iconTheme: const IconThemeData(color: Colors.black87),
         ),
 
-        // Tema oscuro
+        // 🌙 TEMA OSCURO PROFESIONAL
         darkTheme: ThemeData(
           brightness: Brightness.dark,
-          scaffoldBackgroundColor: const Color(0xFF121212),
+          scaffoldBackgroundColor: darkBg,
+          colorScheme: const ColorScheme.dark(
+            primary: primaryDark,
+            secondary: accentLight,
+          ),
           appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFF1E1E1E),
+            backgroundColor: darkBg,
             foregroundColor: Colors.white,
             elevation: 0,
           ),
           iconTheme: const IconThemeData(color: Colors.white70),
         ),
 
-        themeMode: ThemeMode.system, // Cambia según el sistema
+        // 🔄 Cambia automáticamente según el sistema
+        themeMode: ThemeMode.system,
 
         home: const SplashScreen(),
       ),
@@ -81,7 +95,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// 🔧 Clase que mantiene el modo inmersivo activo cuando se reanuda la app
+/// 🔧 Clase para mantener el modo inmersivo
 class WidgetsBindingObserverApp extends StatefulWidget {
   final Widget child;
   const WidgetsBindingObserverApp({super.key, required this.child});
