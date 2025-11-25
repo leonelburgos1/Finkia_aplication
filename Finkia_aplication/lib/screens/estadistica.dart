@@ -437,6 +437,7 @@ class _EstadisticaPageState extends State<EstadisticaPage> {
                                     )
                                     .toList(),
                               ] else if (_selectedSpecific == 'trabajador') ...[
+                                // <-- CAMBIO: ahora trabajadores usa PIE CHART en tonos azules
                                 const Text(
                                   'Trabajadores — gasto por actividad',
                                   style: TextStyle(fontWeight: FontWeight.w600),
@@ -446,13 +447,27 @@ class _EstadisticaPageState extends State<EstadisticaPage> {
                                     ? const Text(
                                         'No hay registros de trabajadores',
                                       )
-                                    : Column(
-                                        children: trabajadoresPorActivityBars(
-                                          trabajadoresPorActivity:
+                                    : SizedBox(
+                                        height: 200,
+                                        child: PieChart(
+                                          PieChartData(
+                                            sections: _mapToPieSections(
                                               trabajadoresPorActividad,
+                                              [
+                                                Colors.blue.shade800,
+                                                Colors.blue.shade600,
+                                                Colors.indigo,
+                                                Colors.lightBlue,
+                                                Colors.cyan,
+                                              ],
+                                            ),
+                                            sectionsSpace: 6,
+                                            centerSpaceRadius: 30,
+                                          ),
                                         ),
                                       ),
                                 const SizedBox(height: 12),
+                                // lista top
                                 ...trabajadoresPorActividad.entries
                                     .toList()
                                     .map(
@@ -556,8 +571,6 @@ class _EstadisticaPageState extends State<EstadisticaPage> {
   // -------------------------------------------
   // WIDGETS & HELPERS
   // -------------------------------------------
-
-  // resumen cards horizontales (adaptable)
   Widget _buildResumenCards(Map<String, double> totals, double totalGeneral) {
     return SizedBox(
       height: 96,
@@ -694,55 +707,114 @@ class _EstadisticaPageState extends State<EstadisticaPage> {
     return _mapToPieSectionsStatic(map, colors, radius: radius);
   }
 
-  // barras para actividades de trabajadores (horizontal simple con ListTiles)
   List<Widget> trabajadoresPorActivityBars({
     required Map<String, double> trabajadoresPorActivity,
   }) {
-    final entries = trabajadoresPorActivity.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    return entries.map((e) {
-      final percent = e.value == 0
-          ? 0.0
-          : (e.value / (entries.first.value == 0 ? 1 : entries.first.value));
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(flex: 3, child: Text(e.key)),
-                Expanded(
-                  flex: 7,
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 18,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      FractionallySizedBox(
-                        widthFactor: percent,
-                        child: Container(
-                          height: 18,
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade400,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(_formatCurrency(e.value)),
-              ],
-            ),
+    // si no hay datos, devolver un texto simple (misma forma que antes)
+    if (trabajadoresPorActivity.isEmpty) {
+      return [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          child: Text('No hay registros de trabajadores'),
+        ),
+      ];
+    }
+
+    // paleta de azules para el pastel
+    final List<Color> bluePalette = [
+      Colors.blue.shade800,
+      Colors.blue.shade600,
+      Colors.indigo,
+      Colors.lightBlue,
+      Colors.cyan,
+      Colors.teal,
+    ];
+
+    // crear secciones del pie
+    final sections = _mapToPieSections(
+      trabajadoresPorActivity,
+      bluePalette,
+      radius: 56,
+    );
+
+    // construir leyenda (pequeños chips con color y texto)
+    final legend = Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      children: trabajadoresPorActivity.entries.map((e) {
+        final idx = trabajadoresPorActivity.keys.toList().indexOf(e.key);
+        final color = bluePalette[idx % bluePalette.length];
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.withOpacity(0.12)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 12, height: 12, color: color),
+              const SizedBox(width: 8),
+              Text('${e.key}: ${_formatCurrency(e.value)}'),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+
+    // construir lista de ListTiles (top items)
+    final itemsList = trabajadoresPorActivity.entries
+        .toList()
+        .map(
+          (e) => ListTile(
+            dense: true,
+            visualDensity: VisualDensity.compact,
+            title: Text(e.key),
+            trailing: Text(_formatCurrency(e.value)),
+          ),
+        )
+        .toList();
+
+    // devolver una lista con un único widget contenedor que incluye:
+    // - el pie chart
+    // - la leyenda (wrap)
+    // - la lista de items
+    return [
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 6),
           ],
         ),
-      );
-    }).toList();
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 220,
+              child: PieChart(
+                PieChartData(
+                  sections: sections,
+                  centerSpaceRadius: 34,
+                  sectionsSpace: 6,
+                  borderData: FlBorderData(show: false),
+                  // ajustar títulos para que no hagan overflow en pantallas pequeñas
+                  pieTouchData: PieTouchData(enabled: true),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            legend,
+            const Divider(height: 18),
+            // los items en columna
+            ...itemsList,
+          ],
+        ),
+      ),
+    ];
   }
 
   // pie para transporte

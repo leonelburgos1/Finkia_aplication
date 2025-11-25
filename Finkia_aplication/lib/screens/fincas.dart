@@ -33,8 +33,9 @@ class _FincasPageState extends State<FincasPage> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color.fromARGB(192, 2, 20, 3) : Colors.white,
+      backgroundColor: isDark
+          ? const Color.fromARGB(192, 2, 20, 3)
+          : Colors.white,
       body: Stack(
         children: [
           // -----------------------------------
@@ -56,29 +57,6 @@ class _FincasPageState extends State<FincasPage> {
           // -----------------------------------
           //       BOTÓN ATRÁS REDONDO
           // -----------------------------------
-          Positioned(
-            top: 30,
-            left: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.25),
-                border: Border.all(color: Colors.white, width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.25),
-                    blurRadius: 6,
-                    offset: const Offset(2, 2),
-                  ),
-                ],
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-          ),
-
           // -----------------------------------
           //     CONTENIDO PRINCIPAL (LISTA)
           // -----------------------------------
@@ -119,7 +97,7 @@ class _FincasPageState extends State<FincasPage> {
                                     color: Colors.black.withOpacity(0.08),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
-                                  )
+                                  ),
                               ],
                             ),
                             child: Padding(
@@ -146,29 +124,35 @@ class _FincasPageState extends State<FincasPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       _infoItem(
-                                          isDark,
-                                          Icons.public,
-                                          "${context.local.pais}: ${data['pais'] ?? context.local.noEspecificado}"),
+                                        isDark,
+                                        Icons.public,
+                                        "${context.local.pais}: ${data['pais'] ?? context.local.noEspecificado}",
+                                      ),
                                       _infoItem(
-                                          isDark,
-                                          Icons.map,
-                                          "${context.local.departamento}: ${data['departamento'] ?? context.local.noEspecificado}"),
+                                        isDark,
+                                        Icons.map,
+                                        "${context.local.departamento}: ${data['departamento'] ?? context.local.noEspecificado}",
+                                      ),
                                       _infoItem(
-                                          isDark,
-                                          Icons.location_city,
-                                          "${context.local.ciudad}: ${data['ciudad'] ?? context.local.noEspecificado}"),
+                                        isDark,
+                                        Icons.location_city,
+                                        "${context.local.ciudad}: ${data['ciudad'] ?? context.local.noEspecificado}",
+                                      ),
                                       _infoItem(
-                                          isDark,
-                                          Icons.agriculture,
-                                          "${context.local.actividad}: ${data['actividad'] ?? context.local.noEspecificado}"),
+                                        isDark,
+                                        Icons.agriculture,
+                                        "${context.local.actividad}: ${data['actividad'] ?? context.local.noEspecificado}",
+                                      ),
                                       _infoItem(
-                                          isDark,
-                                          Icons.straighten,
-                                          "${context.local.area}: ${data['area']} ha"),
+                                        isDark,
+                                        Icons.straighten,
+                                        "${context.local.area}: ${data['area']} ha",
+                                      ),
                                       _infoItem(
-                                          isDark,
-                                          Icons.phone,
-                                          "${context.local.contacto}: ${data['contacto']}"),
+                                        isDark,
+                                        Icons.phone,
+                                        "${context.local.contacto}: ${data['contacto']}",
+                                      ),
                                     ],
                                   ),
 
@@ -183,38 +167,55 @@ class _FincasPageState extends State<FincasPage> {
                                           colors: isDark
                                               ? [
                                                   const Color.fromARGB(
-                                                      210, 2, 78, 7),
+                                                    210,
+                                                    2,
+                                                    78,
+                                                    7,
+                                                  ),
                                                   const Color.fromARGB(
-                                                      255, 1, 34, 2),
+                                                    255,
+                                                    1,
+                                                    34,
+                                                    2,
+                                                  ),
                                                 ]
                                               : [
                                                   const Color.fromARGB(
-                                                      255, 164, 231, 38),
+                                                    255,
+                                                    164,
+                                                    231,
+                                                    38,
+                                                  ),
                                                   const Color(0xFF2E7D32),
                                                 ],
                                         ),
                                         borderRadius: BorderRadius.circular(14),
-                                        border:
-                                            Border.all(color: Color.fromARGB(255, 2, 19, 0)),
+                                        border: Border.all(
+                                          color: Color.fromARGB(255, 2, 19, 0),
+                                        ),
                                       ),
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.transparent,
                                           shadowColor: Colors.transparent,
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 25, vertical: 12),
+                                            horizontal: 25,
+                                            vertical: 12,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(14),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
                                           ),
                                         ),
                                         onPressed: () {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (_) => ResponsiveNavBarPage(
-                                                fincaId: fincas[index].id,
-                                              ),
+                                              builder: (_) =>
+                                                  ResponsiveNavBarPage(
+                                                    fincaId: fincas[index].id,
+                                                  ),
                                             ),
                                           );
                                         },
@@ -256,7 +257,9 @@ class _FincasPageState extends State<FincasPage> {
                             ],
                     ),
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: const Color.fromARGB(255, 2, 19, 0)),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 2, 19, 0),
+                    ),
                   ),
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.add, color: Colors.white, size: 25),

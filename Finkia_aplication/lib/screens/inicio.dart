@@ -1,22 +1,23 @@
+// responsive_navbar_page.dart
+import 'package:agrou_aplication/screens/asesorIA.dart';
 import 'package:agrou_aplication/screens/form_finca.dart';
 import 'package:agrou_aplication/screens/fincas.dart';
 import 'package:agrou_aplication/screens/gastos.dart';
 import 'package:agrou_aplication/screens/login.dart';
 import 'package:agrou_aplication/screens/estadistica.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:agrou_aplication/utils/localization_extension.dart';
+import 'package:agrou_aplication/screens/acercaDe.dart';
 
 // ======================= PALETA DE COLORES =======================
-
 const Color darkBg = Color.fromARGB(255, 1, 34, 2);
 const Color primaryDark = Color.fromARGB(255, 2, 78, 7);
 const Color primaryLight = Color.fromARGB(210, 2, 78, 7);
 const Color accentLight = Color.fromARGB(255, 235, 235, 235);
+// ==============================================================
 
-// ================================================================
-//                       PÁGINA PRINCIPAL
-// ================================================================
 class ResponsiveNavBarPage extends StatefulWidget {
   final String fincaId;
 
@@ -30,24 +31,42 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedIndex = 0;
 
-  late List<String> _menuItems = [];
+  // Nuevo Future para cargar el nombre de la finca
+  late Future<String> _fincaNameFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Inicializa la carga del nombre de la finca al iniciar el widget
+    _fincaNameFuture = _loadFincaName(widget.fincaId);
+  }
+
+  // Método para obtener el nombre de la finca de Firestore
+  Future<String> _loadFincaName(String fincaId) async {
+    try {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('fincas')
+          .doc(fincaId)
+          .get();
+
+      if (docSnapshot.exists) {
+        // Asegúrate de que 'nombre' es la clave correcta en tu documento
+        return docSnapshot.data()?['nombre'] as String? ?? 'Finca Desconocida';
+      }
+      return 'Finca No Encontrada';
+    } catch (e) {
+      // En caso de error de conexión o de Firestore
+      print('Error al cargar el nombre de la finca: $e');
+      return 'Error de Carga';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    _menuItems = [
-      context.local.acercaDe,
-      context.local.contacto,
-      context.local.configuracion,
-      context.local.salir,
-    ];
-
-    final width = MediaQuery.of(context).size.width;
-    final bool isLargeScreen = width > 800;
-
     final List<Widget> _pages = [
-      const HomeSection(),
+      HomeSection(fincaId: widget.fincaId),
       const FincasPage(),
       const FormFinca(),
       Center(
@@ -72,9 +91,7 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
             left: 0,
             right: 0,
             child: Image.asset(
-              isDark
-                  ? 'assets/images/header2.png'
-                  : 'assets/images/gastos.png',
+              isDark ? 'assets/images/header2.png' : 'assets/images/header.png',
               fit: BoxFit.cover,
               height: 100,
             ),
@@ -138,6 +155,14 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                           EstadisticaPage(fincaId: widget.fincaId),
                     ),
                   );
+                } else if (index == 3) {
+                  // ===> LÓGICA PARA EL ASESOR IA (Reemplaza Notificaciones) <===
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AsesorAgricolaPage(),
+                    ),
+                  );
                 } else {
                   setState(() => selectedIndex = index);
                 }
@@ -150,7 +175,7 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
   }
 
   // ================================================================
-  //                           DRAWER
+  //                          DRAWER CON NOMBRE DE FINCA
   // ================================================================
   Widget _drawer(bool isDark) {
     return TweenAnimationBuilder<double>(
@@ -166,7 +191,10 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
               gradient: LinearGradient(
                 colors: isDark
                     ? [primaryDark, darkBg]
-                    : [Color.fromARGB(255, 38, 95, 5), Color.fromARGB(255, 164, 231, 38)],
+                    : [
+                        const Color.fromARGB(255, 38, 95, 5),
+                        const Color.fromARGB(255, 164, 231, 38),
+                      ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -180,28 +208,68 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                     child: CircleAvatar(
                       radius: 45,
                       backgroundColor: Colors.white.withOpacity(0.2),
-                      backgroundImage:
-                          const AssetImage('assets/images/trabajador1.jpg'),
+                      backgroundImage: const AssetImage(
+                        'assets/images/trabajador1.jpg',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 15),
-                  const Divider(color: Color.fromARGB(59, 255, 255, 255), thickness: 1),
+
+                  // =================== NOMBRE DE LA FINCA ===================
+                  Center(
+                    child: FutureBuilder<String>(
+                      future: _fincaNameFuture,
+                      builder: (context, snapshot) {
+                        String name = 'Cargando...';
+                        if (snapshot.hasData) {
+                          name = snapshot.data!;
+                        } else if (snapshot.hasError) {
+                          name = 'Error';
+                        }
+                        return Text(
+                          name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  // ==========================================================
+                  const SizedBox(height: 15),
+                  const Divider(
+                    color: Color.fromARGB(59, 255, 255, 255),
+                    thickness: 1,
+                  ),
 
                   // Ítems del menú
                   ...[
-                    {'icon': Icons.info_outline, 'text': context.local.acercaDe},
                     {
-                      'icon': Icons.contact_mail_outlined,
-                      'text': context.local.contacto
+                      'icon': Icons.info_outline,
+                      'text': context.local.acercaDe,
+                      'action': 'acerca',
                     },
                     {
-                      'icon': Icons.settings_outlined,
-                      'text': context.local.configuracion
+                      'icon': Icons.swap_horiz,
+                      'text': context.local.cambiar_finca,
+                      'action': 'cambiar',
                     },
-                    {'icon': Icons.logout, 'text': context.local.salir},
+                    {
+                      'icon': Icons.logout,
+                      'text': context.local.salir,
+                      'action': 'salir',
+                    },
                   ].map((item) {
+                    final String action = item['action'] as String;
                     return ListTile(
-                      leading: Icon(item['icon'] as IconData, color: Colors.white),
+                      leading: Icon(
+                        item['icon'] as IconData,
+                        color: Colors.white,
+                      ),
                       title: Text(
                         item['text'] as String,
                         style: const TextStyle(
@@ -211,15 +279,33 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                         ),
                       ),
                       onTap: () async {
-                        if (item['text'] == context.local.salir) {
+                        Navigator.pop(context); // Cerrar el drawer primero
+
+                        if (action == 'salir') {
                           await FirebaseAuth.instance.signOut();
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(builder: (_) => const Login()),
                             (route) => false,
                           );
-                        } else {
-                          _scaffoldKey.currentState?.openEndDrawer();
+                        } else if (action == 'cambiar') {
+                          // Opción de Cambiar de finca -> Redirige a FincasPage
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const FincasPage(),
+                            ),
+                            (route) =>
+                                false, // Elimina todas las rutas anteriores
+                          );
+                        } else if (action == 'acerca') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const AcercaDePage(), // Reemplaza AboutPage() con tu clase
+                            ),
+                          );
                         }
                       },
                     );
@@ -229,7 +315,12 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.1),
+                      color: const Color.fromARGB(
+                        255,
+                        0,
+                        0,
+                        0,
+                      ).withOpacity(0.1),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(16),
@@ -253,33 +344,272 @@ class _ResponsiveNavBarPageState extends State<ResponsiveNavBarPage> {
 }
 
 // ================================================================
-//                       HOME SECTION
+//                       HOME SECTION (CON 5 GASTOS SEPARADOS)
 // ================================================================
 class HomeSection extends StatelessWidget {
-  const HomeSection({super.key});
+  final String fincaId;
+  const HomeSection({super.key, required this.fincaId});
+
+  // Método helper para formatear a moneda
+  String _formatCurrency(double v) {
+    if (v == 0) return '\$0';
+    if (v.abs() >= 1000000)
+      return '\$' + (v / 1000000).toStringAsFixed(1) + 'M';
+    if (v.abs() >= 1000) return '\$' + (v / 1000).toStringAsFixed(1) + 'K';
+    return '\$' + v.toStringAsFixed(0);
+  }
+
+  // pequeña tarjeta usada dentro del grid
+  Widget _smallCard(String title, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 245, 243, 243),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color.fromARGB(255, 0, 0, 0),
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final gastosStream = FirebaseFirestore.instance
+        .collection('fincas')
+        .doc(fincaId)
+        .collection('gastos')
+        .snapshots();
 
     return Container(
       color: isDark ? darkBg : Colors.white,
       width: double.infinity,
       height: double.infinity,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const SizedBox(height: 30),
-          Expanded(
-            child: Center(
-              child: Image.asset(
-                isDark
-                    ? 'assets/images/Finkia_Transparente.png'
-                    : 'assets/images/Finkia_Transparente.png',
-                fit: BoxFit.contain,
-              ),
+          const SizedBox(height: 20),
+
+          // Tarjeta "Gastos generales" con Grid de 3 columnas
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: gastosStream,
+              builder: (context, snapshot) {
+                // valores por defecto
+                double totalGeneral = 0.0;
+                final Map<String, double> totalPorTipo = {
+                  context.local.comida: 0.0,
+                  context.local.trabajadores: 0.0,
+                  context.local.insumos: 0.0,
+                  context.local.transporte: 0.0,
+                  context.local.otros: 0.0,
+                };
+
+                if (snapshot.hasData) {
+                  final docs = snapshot.data!.docs;
+                  for (var d in docs) {
+                    final data = d.data();
+                    final tipo =
+                        (data['tipo'] as String?)?.toLowerCase() ?? 'otros';
+                    double valorDoc = 0.0;
+
+                    if (data.containsKey('total')) {
+                      valorDoc = (data['total'] is num)
+                          ? (data['total'] as num).toDouble()
+                          : double.tryParse('${data['total']}') ?? 0.0;
+                    } else if (data.containsKey('precio')) {
+                      valorDoc = (data['precio'] is num)
+                          ? (data['precio'] as num).toDouble()
+                          : double.tryParse('${data['precio']}') ?? 0.0;
+                    } else if (data.containsKey('valorPorBulto')) {
+                      final cant = (data['cantidadBultos'] is num)
+                          ? (data['cantidadBultos'] as num).toDouble()
+                          : double.tryParse('${data['cantidadBultos'] ?? 0}') ??
+                                0.0;
+                      final val = (data['valorPorBulto'] is num)
+                          ? (data['valorPorBulto'] as num).toDouble()
+                          : double.tryParse('${data['valorPorBulto'] ?? 0}') ??
+                                0.0;
+                      valorDoc = cant * val;
+                    } else if (data.containsKey('precioPorLitro') &&
+                        data.containsKey('litros')) {
+                      final litros = (data['litros'] is num)
+                          ? (data['litros'] as num).toDouble()
+                          : double.tryParse('${data['litros'] ?? 0}') ?? 0.0;
+                      final precioL = (data['precioPorLitro'] is num)
+                          ? (data['precioPorLitro'] as num).toDouble()
+                          : double.tryParse('${data['precioPorLitro'] ?? 0}') ??
+                                0.0;
+                      valorDoc =
+                          litros * precioL +
+                          ((data['otrosGastos'] is num)
+                              ? (data['otrosGastos'] as num).toDouble()
+                              : double.tryParse(
+                                      '${data['otrosGastos'] ?? 0}',
+                                    ) ??
+                                    0.0);
+                    } else if (data.containsKey('valorUnidad') &&
+                        data.containsKey('cantidadTrabajadores')) {
+                      final cantidadTrab = (data['cantidadTrabajadores'] is num)
+                          ? (data['cantidadTrabajadores'] as num).toDouble()
+                          : double.tryParse(
+                                  '${data['cantidadTrabajadores'] ?? 0}',
+                                ) ??
+                                0.0;
+                      final cantidad = (data['cantidad'] is num)
+                          ? (data['cantidad'] as num).toDouble()
+                          : double.tryParse('${data['cantidad'] ?? 0}') ?? 0.0;
+                      final valorUnidad = (data['valorUnidad'] is num)
+                          ? (data['valorUnidad'] as num).toDouble()
+                          : double.tryParse('${data['valorUnidad'] ?? 0}') ??
+                                0.0;
+                      valorDoc = cantidadTrab * cantidad * valorUnidad;
+                    } else {
+                      if (data.containsKey('valorUnidad')) {
+                        valorDoc = (data['valorUnidad'] is num)
+                            ? (data['valorUnidad'] as num).toDouble()
+                            : double.tryParse('${data['valorUnidad']}') ?? 0.0;
+                      } else {
+                        valorDoc = 0.0;
+                      }
+                    }
+
+                    totalGeneral += valorDoc;
+                    if (totalPorTipo.containsKey(tipo)) {
+                      totalPorTipo[tipo] = (totalPorTipo[tipo] ?? 0) + valorDoc;
+                    } else {
+                      totalPorTipo['otros'] =
+                          (totalPorTipo['otros'] ?? 0) + valorDoc;
+                    }
+                  }
+                }
+
+                // Lista de todos los widgets de las tarjetas de gasto
+                final List<Widget> expenseCards = [
+                  _smallCard(
+                    context.local.total_general,
+                    _formatCurrency(totalGeneral),
+                    Colors.black87,
+                  ),
+                  _smallCard(
+                    context.local.comida,
+                    _formatCurrency(totalPorTipo[context.local.comida] ?? 0),
+                    const Color(0xFF2E7D32),
+                  ),
+                  _smallCard(
+                    context.local.trabajadores,
+                    _formatCurrency(
+                      totalPorTipo[context.local.trabajadores] ?? 0,
+                    ),
+                    const Color(0xFFA4E726),
+                  ),
+                  _smallCard(
+                    context.local.insumos,
+                    _formatCurrency(totalPorTipo[context.local.insumos] ?? 0),
+                    Colors.orange,
+                  ),
+                  _smallCard(
+                    context.local.transporte,
+                    _formatCurrency(
+                      totalPorTipo[context.local.transporte] ?? 0,
+                    ),
+                    Colors.deepOrange,
+                  ),
+                ];
+
+                // tarjeta que contiene el grid
+                return Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                      ),
+                    ],
+                    border: Border.all(
+                      color: const Color.fromARGB(
+                        255,
+                        0,
+                        0,
+                        0,
+                      ).withOpacity(0.06),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Text(
+                          context.local.gastos_generales,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Usamos GridView con 3 columnas
+                      GridView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: expenseCards.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 1.0,
+                              mainAxisSpacing: 8,
+                              crossAxisSpacing: 8,
+                            ),
+                        itemBuilder: (context, index) {
+                          return expenseCards[index];
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
+
+          // espacio y resto del Home
+          const Expanded(child: SizedBox.shrink()),
         ],
       ),
     );
@@ -287,7 +617,7 @@ class HomeSection extends StatelessWidget {
 }
 
 // ================================================================
-//                    CUSTOM BOTTOM NAV BAR
+//                    CUSTOM BOTTOM NAV BAR
 // ================================================================
 class CustomBottomNavBar extends StatefulWidget {
   final int selectedIndex;
@@ -308,7 +638,6 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
-
     double sectionWidth = size.width / 4;
 
     final List<double> positions = [
@@ -334,8 +663,10 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             children: [
               CustomPaint(
                 size: Size(size.width, 90),
-                painter:
-                    BNBCustomPainter(position: position, isDarkMode: isDarkMode),
+                painter: BNBCustomPainter(
+                  position: position,
+                  isDarkMode: isDarkMode,
+                ),
               ),
               Positioned.fill(
                 child: Row(
@@ -344,7 +675,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                     _buildNavIcon(Icons.home, 0, isDarkMode),
                     _buildNavIcon(Icons.bar_chart_rounded, 1, isDarkMode),
                     _buildNavIcon(Icons.add_circle_outline, 2, isDarkMode),
-                    _buildNavIcon(Icons.notifications, 3, isDarkMode),
+                    _buildNavIcon(Icons.auto_awesome, 3, isDarkMode),
                   ],
                 ),
               ),
@@ -363,19 +694,18 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutBack,
-        transform:
-            Matrix4.translationValues(0, isSelected ? -20 : -5, 0),
+        transform: Matrix4.translationValues(0, isSelected ? -20 : -5, 0),
         child: Container(
           decoration: isSelected
               ? BoxDecoration(
-                    color: isDarkMode
-                    ? const Color.fromARGB(255, 32, 138, 23):
-                      const Color.fromARGB(255, 164, 231, 38),
+                  color: isDarkMode
+                      ? const Color.fromARGB(255, 32, 138, 23)
+                      : const Color.fromARGB(255, 164, 231, 38),
                   shape: BoxShape.circle,
                   border: Border.all(
-                  color: isDarkMode
-                    ? const Color.fromARGB(255, 6, 167, 33).withOpacity(0.3):
-                      const Color.fromARGB(255, 38, 95, 5).withOpacity(0.3),
+                    color: isDarkMode
+                        ? const Color.fromARGB(255, 6, 167, 33).withOpacity(0.3)
+                        : const Color.fromARGB(255, 38, 95, 5).withOpacity(0.3),
                     width: 2,
                   ),
                 )
@@ -383,8 +713,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           padding: const EdgeInsets.all(10),
           child: Icon(
             icon,
-            color:
-                isSelected ? Colors.white : (isDarkMode ? Colors.white : primaryDark),
+            color: isSelected
+                ? Colors.white
+                : (isDarkMode ? Colors.white : primaryDark),
             size: isSelected ? 35 : 28,
           ),
         ),
@@ -394,7 +725,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 }
 
 // ================================================================
-//                      PINTOR NAV BAR
+//                      PINTOR NAV BAR
 // ================================================================
 class BNBCustomPainter extends CustomPainter {
   final double position;
@@ -427,7 +758,7 @@ class BNBCustomPainter extends CustomPainter {
     canvas.restore();
 
     final paint = Paint()
-      ..color = isDarkMode ? Color.fromARGB(210, 2, 78, 7) : Colors.white
+      ..color = isDarkMode ? const Color.fromARGB(210, 2, 78, 7) : Colors.white
       ..style = PaintingStyle.fill;
 
     canvas.drawPath(path, paint);

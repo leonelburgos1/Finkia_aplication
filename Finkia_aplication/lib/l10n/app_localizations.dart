@@ -403,6 +403,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Department'**
   String get departamento;
+
+  /// No description provided for @historia_origen.
+  ///
+  /// In en, this message translates to:
+  /// **'Our History and Origin'**
+  String get historia_origen;
+
+  /// No description provided for @finkia_aplicacion.
+  ///
+  /// In en, this message translates to:
+  /// **'Finkia is an application developed in'**
+  String get finkia_aplicacion;
+
+  /// No description provided for @nacemos_de.
+  ///
+  /// In en, this message translates to:
+  /// **'We are born from local knowledge and the firm conviction to boost the agrarian economy of our region.'**
+  String get nacemos_de;
+
+  /// No description provided for @equipo.
+  ///
+  /// In en, this message translates to:
+  /// **'Founding Team'**
+  String get equipo;
+
+  /// No description provided for @desarrollador.
+  ///
+  /// In en, this message translates to:
+  /// **'Developer'**
+  String get desarrollador;
+
+  /// No description provided for @finkia_nace.
+  ///
+  /// In en, this message translates to:
+  /// **'Finkia is born as a digital solution, created thinking about the real needs of the Colombian farmer, with an initial specialization in the coffee sector.'**
+  String get finkia_nace;
+
+  /// No description provided for @permite_registrar.
+  ///
+  /// In en, this message translates to:
+  /// **'Allows registering one or more farms, organizing your operation by property.'**
+  String get permite_registrar;
+
+  /// No description provided for @controla_deta.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailedly controls key expenses: Supplies, Transport, Workers, and Food.'**
+  String get controla_deta;
+
+  /// No description provided for @genera_esta.
+  ///
+  /// In en, this message translates to:
+  /// **'Generates intuitive statistics to visualize and optimize your agricultural profitability.'**
+  String get genera_esta;
+
+  /// No description provided for @hola_ia.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello! I am your virtual Agricultural Advisor. Ask me anything about crops, weather, or any topic.'**
+  String get hola_ia;
+
+  /// No description provided for @error_ia.
+  ///
+  /// In en, this message translates to:
+  /// **'ERROR: The Gemini API key is not configured. Please add it to the code to make real queries.'**
+  String get error_ia;
+
+  /// No description provided for @actua_como.
+  ///
+  /// In en, this message translates to:
+  /// **'Act as a friendly and very knowledgeable agricultural advisor.'**
+  String get actua_como;
+
+  /// No description provided for @lo_siento.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, I could not get a response.'**
+  String get lo_siento;
+
+  /// No description provided for @ia_escribiendo.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Advisor writing...'**
+  String get ia_escribiendo;
+
+  /// No description provided for @pregunta_ia.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the AI Advisor...'**
+  String get pregunta_ia;
+
+  /// No description provided for @carne.
+  ///
+  /// In en, this message translates to:
+  /// **'Meat'**
+  String get carne;
+
+  /// No description provided for @verduras.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetables'**
+  String get verduras;
+
+  /// No description provided for @grano.
+  ///
+  /// In en, this message translates to:
+  /// **'Grain'**
+  String get grano;
+
+  /// No description provided for @frutas.
+  ///
+  /// In en, this message translates to:
+  /// **'Fruits'**
+  String get frutas;
+
+  /// No description provided for @otros.
+  ///
+  /// In en, this message translates to:
+  /// **'Others'**
+  String get otros;
+
+  /// No description provided for @unidad.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unidad;
+
+  /// No description provided for @gasto_comida_guardado.
+  ///
+  /// In en, this message translates to:
+  /// **'Food expense saved'**
+  String get gasto_comida_guardado;
+
+  /// No description provided for @error_comida.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving expense:'**
+  String get error_comida;
+
+  /// No description provided for @gasto_comida.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Expense'**
+  String get gasto_comida;
+
+  /// No description provided for @detalle.
+  ///
+  /// In en, this message translates to:
+  /// **'Detail (optional)'**
+  String get detalle;
+
+  /// No description provided for @descripcion_alimento.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the food or expense'**
+  String get descripcion_alimento;
+
+  /// No description provided for @detalle_op.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional detail (e.g., Beef, Tomato...)'**
+  String get detalle_op;
+
+  /// No description provided for @describe_descripcion.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a description'**
+  String get describe_descripcion;
+
+  /// No description provided for @cantidad_precio.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity and Price'**
+  String get cantidad_precio;
+
+  /// No description provided for @cantidad.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get cantidad;
+
+  /// No description provided for @ingresa_cant.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter quantity'**
+  String get ingresa_cant;
+
+  /// No description provided for @num_invalido.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid number'**
+  String get num_invalido;
+
+  /// No description provided for @ingresa_precio.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter price'**
+  String get ingresa_precio;
+
+  /// No description provided for @fecha.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get fecha;
+
+  /// No description provided for @notas.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get notas;
+
+  /// No description provided for @guardar_gasto.
+  ///
+  /// In en, this message translates to:
+  /// **'Save expense'**
+  String get guardar_gasto;
+
+  /// No description provided for @comida.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get comida;
+
+  /// No description provided for @cambiar_finca.
+  ///
+  /// In en, this message translates to:
+  /// **'Change farm'**
+  String get cambiar_finca;
+
+  /// No description provided for @gastos_generales.
+  ///
+  /// In en, this message translates to:
+  /// **'General expenses'**
+  String get gastos_generales;
+
+  /// No description provided for @total_general.
+  ///
+  /// In en, this message translates to:
+  /// **'General total'**
+  String get total_general;
+
+  /// No description provided for @trabajadores.
+  ///
+  /// In en, this message translates to:
+  /// **'Workers'**
+  String get trabajadores;
+
+  /// No description provided for @insumos.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplies'**
+  String get insumos;
+
+  /// No description provided for @transporte.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get transporte;
 }
 
 class _AppLocalizationsDelegate
